@@ -1,6 +1,15 @@
 import React from "react";
 
-export function Hero() {
+interface HeroProps {
+  settings?: Record<string, string>;
+}
+
+export function Hero({ settings }: HeroProps) {
+  const headline = settings?.hero_headline || "Designing Elegance, Building Legacy.";
+  const subheadline =
+    settings?.hero_subheadline ||
+    "Where architectural vision meets structural precision. End-to-end Interior Design, Photorealistic 3D Visualization, Project Management Services, and Turnkey Construction.";
+
   return (
     <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden pt-24 pb-16 bg-[#0D0F12]">
       {/* Background Architectural Atmosphere */}
@@ -33,15 +42,11 @@ export function Hero() {
         {/* Main Architectural Headline */}
         <div className="space-y-4 max-w-4xl mx-auto">
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.08]">
-            Designing Elegance,{" "}
-            <span className="bg-gradient-to-r from-[#C5A869] via-[#E2C78A] to-[#D4AF37] bg-clip-text text-transparent">
-              Building Legacy.
-            </span>
+            {headline}
           </h1>
 
           <p className="text-base sm:text-lg lg:text-xl text-neutral-300 max-w-2xl mx-auto font-light leading-relaxed">
-            Where architectural vision meets structural precision. End-to-end Interior Design,
-            Photorealistic 3D Visualization, Project Management Services, and Turnkey Construction.
+            {subheadline}
           </p>
         </div>
 
@@ -58,41 +63,29 @@ export function Hero() {
             href="#quotation"
             className="w-full sm:w-auto px-8 py-3.5 rounded bg-[#14171C] hover:bg-[#1D2128] border border-[#2B313D] hover:border-[#C5A869]/50 text-white font-semibold text-xs uppercase tracking-[0.15em] transition duration-300"
           >
-            Calculate Quotation
-          </a>
-
-          <a
-            href="#contact"
-            className="w-full sm:w-auto px-6 py-3.5 rounded text-neutral-400 hover:text-[#C5A869] text-xs font-semibold uppercase tracking-[0.15em] transition duration-200"
-          >
-            Consult Engineers &rarr;
+            Calculate Instant Estimate
           </a>
         </div>
 
         {/* Core Pillars Ribbon */}
-        <div className="pt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left border-t border-[#2B313D]/60">
-          <div className="p-3.5 rounded-lg bg-[#14171C]/50 border border-[#2B313D]/40">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#C5A869]">01 / Design</span>
-            <p className="text-xs font-bold text-white mt-1">Interior Architecture</p>
-            <p className="text-[11px] text-neutral-400 mt-0.5">Bespoke spatial harmony</p>
-          </div>
-
-          <div className="p-3.5 rounded-lg bg-[#14171C]/50 border border-[#2B313D]/40">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#C5A869]">02 / Vision</span>
-            <p className="text-xs font-bold text-white mt-1">3D Visualization</p>
-            <p className="text-[11px] text-neutral-400 mt-0.5">Photorealistic renders</p>
-          </div>
-
-          <div className="p-3.5 rounded-lg bg-[#14171C]/50 border border-[#2B313D]/40">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#C5A869]">03 / Control</span>
-            <p className="text-xs font-bold text-white mt-1">Project Management</p>
-            <p className="text-[11px] text-neutral-400 mt-0.5">Scientific site supervision</p>
-          </div>
-
-          <div className="p-3.5 rounded-lg bg-[#14171C]/50 border border-[#2B313D]/40">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#C5A869]">04 / Build</span>
-            <p className="text-xs font-bold text-white mt-1">Turnkey Construction</p>
-            <p className="text-[11px] text-neutral-400 mt-0.5">Excavation to handover</p>
+        <div className="pt-10 border-t border-[#2B313D]/40 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div className="p-3">
+              <span className="block text-xs font-mono uppercase tracking-widest text-[#C5A869]">01</span>
+              <span className="text-sm font-semibold text-neutral-200">Interior Design</span>
+            </div>
+            <div className="p-3">
+              <span className="block text-xs font-mono uppercase tracking-widest text-[#C5A869]">02</span>
+              <span className="text-sm font-semibold text-neutral-200">3D Visualization</span>
+            </div>
+            <div className="p-3">
+              <span className="block text-xs font-mono uppercase tracking-widest text-[#C5A869]">03</span>
+              <span className="text-sm font-semibold text-neutral-200">PMS &amp; Supervision</span>
+            </div>
+            <div className="p-3">
+              <span className="block text-xs font-mono uppercase tracking-widest text-[#C5A869]">04</span>
+              <span className="text-sm font-semibold text-neutral-200">Turnkey Construction</span>
+            </div>
           </div>
         </div>
       </div>

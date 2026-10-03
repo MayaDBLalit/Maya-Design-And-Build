@@ -20,6 +20,9 @@ import {
   getPublicSettings,
 } from "@/lib/public-api";
 
+// Ensure real-time dynamic rendering so Admin CMS mutations reflect immediately on the website
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "MAYA Design & Build | Engineering, Interior Design & Turnkey Construction",
   description:
@@ -44,11 +47,11 @@ export default async function HomePage() {
       <Navbar />
 
       <main>
-        {/* 2. Hero Section */}
-        <Hero />
+        {/* 2. Hero Section (Dynamic CMS settings passed) */}
+        <Hero settings={settings} />
 
-        {/* 3. About / Brand Story */}
-        <AboutSection />
+        {/* 3. About / Brand Story (Dynamic CMS settings passed) */}
+        <AboutSection settings={settings} />
 
         {/* 4. Core Services (4 Pillars) */}
         <ServicesSection initialServices={services} />

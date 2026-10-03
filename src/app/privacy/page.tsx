@@ -3,10 +3,13 @@ import Link from "next/link";
 import { getPublicSettings } from "@/lib/public-api";
 import { Footer } from "@/components/public/Footer";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Privacy Policy — MAYA Design & Build",
   description: "Privacy and personal data guidelines for MAYA Design & Build.",
 };
+
 
 export default async function PrivacyPage() {
   const settings = await getPublicSettings();

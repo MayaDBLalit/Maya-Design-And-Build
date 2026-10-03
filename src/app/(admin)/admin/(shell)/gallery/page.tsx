@@ -344,14 +344,27 @@ export default function AdminGalleryPage() {
             <FileUpload
               label="Primary Media File *"
               value={formData.mediaUrl}
-              onChange={(url) => setFormData({ ...formData, mediaUrl: url })}
+              onChange={(url) => setFormData((prev) => ({ ...prev, mediaUrl: url }))}
+              onUploadDetails={(details) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  thumbnailUrl: details.thumbnailUrl || prev.thumbnailUrl,
+                  durationSeconds:
+                    details.durationSeconds !== undefined && details.durationSeconds !== null
+                      ? Math.round(details.durationSeconds)
+                      : prev.durationSeconds,
+                  fileSizeBytes: details.fileSizeBytes || prev.fileSizeBytes,
+                }));
+              }}
+              purpose="gallery"
               acceptType={formData.mediaType}
               helperText={
                 formData.mediaType === "image"
-                  ? "Upload JPG, PNG, WebP up to 10MB"
+                  ? "Upload JPG, PNG, WebP up to 10MB (auto-converted to WebP)"
                   : "Upload MP4, WebM up to 50MB (max 1 minute duration)"
               }
             />
+
 
             {formData.mediaType === "video" && (
               <div>

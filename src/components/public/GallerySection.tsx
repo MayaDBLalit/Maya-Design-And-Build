@@ -86,13 +86,37 @@ export function GallerySection({ initialGallery }: GallerySectionProps) {
                 className="group relative rounded-2xl overflow-hidden bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869]/50 transition-all duration-300 aspect-video cursor-pointer"
               >
                 {item.mediaType === "video" ? (
-                  <video
-                    src={item.mediaUrl}
-                    className="w-full h-full object-cover"
-                    muted
-                    playsInline
-                    preload="metadata"
-                  />
+                  item.thumbnailUrl ? (
+                    <div className="relative w-full h-full">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.thumbnailUrl}
+                        alt={item.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-12 h-12 rounded-full bg-black/70 border border-[#C5A869] text-[#C5A869] flex items-center justify-center pl-1 text-sm shadow-xl group-hover:scale-110 transition">
+                          ▶
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="relative w-full h-full">
+                      <video
+                        src={item.mediaUrl}
+                        className="w-full h-full object-cover"
+                        muted
+                        playsInline
+                        preload="none"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-12 h-12 rounded-full bg-black/70 border border-[#C5A869] text-[#C5A869] flex items-center justify-center pl-1 text-sm shadow-xl group-hover:scale-110 transition">
+                          ▶
+                        </div>
+                      </div>
+                    </div>
+                  )
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -102,6 +126,7 @@ export function GallerySection({ initialGallery }: GallerySectionProps) {
                     loading="lazy"
                   />
                 )}
+
 
                 {/* Overlay Vignette */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-80 group-hover:opacity-95 transition duration-300 p-5 flex flex-col justify-between">

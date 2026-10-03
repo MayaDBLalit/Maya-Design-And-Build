@@ -3,10 +3,13 @@ import Link from "next/link";
 import { getPublicSettings } from "@/lib/public-api";
 import { Footer } from "@/components/public/Footer";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Terms & Conditions — MAYA Design & Build",
   description: "Commercial, estimation, and engineering terms for MAYA Design & Build.",
 };
+
 
 export default async function TermsPage() {
   const settings = await getPublicSettings();

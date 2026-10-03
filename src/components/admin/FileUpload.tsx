@@ -3,11 +3,24 @@
 import React, { useState, useRef } from "react";
 import { IconUpload, IconX, IconCheck, IconAlert } from "./Icons";
 
+export interface UploadDetails {
+  url: string;
+  thumbnailUrl?: string;
+  durationSeconds?: number | null;
+  fileSizeBytes?: number;
+  width?: number;
+  height?: number;
+  format?: string;
+  savingsPercentage?: number;
+}
+
 interface FileUploadProps {
   label?: string;
   value?: string | null;
   onChange: (url: string) => void;
+  onUploadDetails?: (details: UploadDetails) => void;
   acceptType?: "image" | "video" | "any";
+  purpose?: "gallery" | "project" | "team" | "service" | "general";
   helperText?: string;
   className?: string;
 }
@@ -16,13 +29,16 @@ export function FileUpload({
   label,
   value,
   onChange,
+  onUploadDetails,
   acceptType = "image",
+  purpose = "general",
   helperText,
   className = "",
 }: FileUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [uploadInfo, setUploadInfo] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const acceptMime =
@@ -34,11 +50,13 @@ export function FileUpload({
 
   const handleUpload = async (file: File) => {
     setError(null);
+    setUploadInfo(null);
     setIsUploading(true);
 
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("purpose", purpose);
 
       const res = await fetch("/api/admin/upload", {
         method: "POST",
@@ -52,6 +70,25 @@ export function FileUpload({
       }
 
       onChange(data.url);
+
+      if (data.savingsPercentage && data.savingsPercentage > 0) {
+        setUploadInfo(`Optimized WebP (${data.savingsPercentage}% size reduction)`);
+      } else if (data.durationSeconds) {
+        setUploadInfo(`Duration: ${data.durationSeconds}s`);
+      }
+
+      if (onUploadDetails) {
+        onUploadDetails({
+          url: data.url,
+          thumbnailUrl: data.thumbnailUrl,
+          durationSeconds: data.durationSeconds,
+          fileSizeBytes: data.fileSizeBytes,
+          width: data.width,
+          height: data.height,
+          format: data.format,
+          savingsPercentage: data.savingsPercentage,
+        });
+      }
     } catch (err: any) {
       setError(err.message || "Failed to upload file");
     } finally {
@@ -121,14 +158,24 @@ export function FileUpload({
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-mono text-neutral-300 truncate">{value}</p>
-            <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 mt-1">
-              <IconCheck className="w-3 h-3" /> Uploaded successfully
-            </span>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400">
+                <IconCheck className="w-3 h-3" /> Stored locally
+              </span>
+              {uploadInfo && (
+                <span className="text-[10px] font-mono text-[#C5A869] bg-[#C5A869]/10 px-1.5 py-0.5 rounded border border-[#C5A869]/20">
+                  {uploadInfo}
+                </span>
+              )}
+            </div>
           </div>
           <button
             type="button"
-            onClick={() => onChange("")}
-            className="p-1.5 text-neutral-400 hover:text-red-400 hover:bg-neutral-800 rounded transition"
+            onClick={() => {
+              onChange("");
+              setUploadInfo(null);
+            }}
+            className="p-1.5 text-neutral-400 hover:text-red-400 hover:bg-neutral-800 rounded transition cursor-pointer"
             title="Remove media"
           >
             <IconX className="w-4 h-4" />
@@ -162,7 +209,7 @@ export function FileUpload({
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                 </svg>
-                <span>Uploading to local storage...</span>
+                <span>Processing &amp; optimizing with Sharp...</span>
               </div>
             ) : (
               <>
@@ -176,7 +223,7 @@ export function FileUpload({
                   {acceptType === "video"
                     ? "MP4, WebM up to 50MB (max 1 min)"
                     : acceptType === "image"
-                    ? "PNG, JPG, WebP, AVIF up to 10MB"
+                    ? "PNG, JPG, WebP, AVIF up to 10MB (auto-compressed to WebP)"
                     : "Images up to 10MB or Videos up to 50MB"}
                 </p>
               </>
@@ -185,15 +232,15 @@ export function FileUpload({
         </div>
       )}
 
-      {error && (
-        <div className="flex items-center gap-1.5 text-xs text-red-400 mt-1">
-          <IconAlert className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
-
       {helperText && !error && (
         <p className="text-[11px] text-neutral-500">{helperText}</p>
+      )}
+
+      {error && (
+        <div className="p-2 rounded bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
+          <IconAlert className="w-4 h-4 flex-shrink-0" />
+          <span>{error}</span>
+        </div>
       )}
     </div>
   );

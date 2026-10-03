@@ -1,6 +1,12 @@
 import React from "react";
 
-export function AboutSection() {
+interface AboutSectionProps {
+  settings?: Record<string, string>;
+}
+
+export function AboutSection({ settings }: AboutSectionProps) {
+  const customSummary = settings?.about_summary;
+
   return (
     <section id="about" className="py-24 bg-[#0D0F12] relative border-t border-[#2B313D]/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,17 +57,25 @@ export function AboutSection() {
                 The Integrated Design &amp; Build Philosophy
               </h3>
 
-              <p className="text-sm text-neutral-300 leading-relaxed mb-4">
-                Traditional construction projects are frequently plagued by communication silos
-                between architects, structural engineers, and independent contractors. This friction
-                often results in budget creep, timeline delays, and compromised aesthetic execution.
-              </p>
+              {customSummary ? (
+                <div className="text-sm text-neutral-300 leading-relaxed mb-6 whitespace-pre-wrap">
+                  {customSummary}
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm text-neutral-300 leading-relaxed mb-4">
+                    Traditional construction projects are frequently plagued by communication silos
+                    between architects, structural engineers, and independent contractors. This friction
+                    often results in budget creep, timeline delays, and compromised aesthetic execution.
+                  </p>
 
-              <p className="text-sm text-neutral-400 leading-relaxed mb-6">
-                MAYA eliminates this division by uniting architectural vision, interior styling,
-                structural calculation, and site execution under one unified, engineering-driven
-                roof. Every detail drafted in 3D is engineered to be accurately executed on site.
-              </p>
+                  <p className="text-sm text-neutral-400 leading-relaxed mb-6">
+                    MAYA eliminates this division by uniting architectural vision, interior styling,
+                    structural calculation, and site execution under one unified, engineering-driven
+                    roof. Every detail drafted in 3D is engineered to be accurately executed on site.
+                  </p>
+                </>
+              )}
 
               <div className="space-y-4 pt-4 border-t border-[#2B313D]/80">
                 <div className="flex items-start gap-4">
@@ -88,8 +102,8 @@ export function AboutSection() {
                       Transparent Itemized Quotations
                     </h4>
                     <p className="text-xs text-neutral-400 mt-0.5">
-                      No opaque packages. Our real-time digital calculation engine gives clients full
-                      transparency into exact square-foot and line-item engineering costs.
+                      Clear rate-based costing without hidden contingency markups or arbitrary package
+                      tiers.
                     </p>
                   </div>
                 </div>
@@ -100,11 +114,11 @@ export function AboutSection() {
                   </div>
                   <div>
                     <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-                      Five Factor Elemental Balance
+                      Single-Point Turnkey Responsibility
                     </h4>
                     <p className="text-xs text-neutral-400 mt-0.5">
-                      Rooted in natural harmony—Space, Air, Fire, Water, and Earth—ensuring functional,
-                      climatically responsive living spaces.
+                      From soil survey to handover, your project has one dedicated engineering team
+                      accountable for quality, safety, and delivery.
                     </p>
                   </div>
                 </div>

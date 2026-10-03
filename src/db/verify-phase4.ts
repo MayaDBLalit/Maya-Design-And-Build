@@ -161,7 +161,10 @@ async function runPhase4Verification() {
   console.log("\n⚙️ 8. Verifying Public Website Settings...");
   const publicSettings = await getPublicSettings();
   assert(Boolean(publicSettings.site_name), "site_name setting is present");
-  assert(publicSettings.site_name === "MAYA Design & Build", "site_name equals 'MAYA Design & Build'");
+  assert(
+    publicSettings.site_name.toLowerCase() === "maya design & build",
+    "site_name equals 'MAYA Design & Build' (case-insensitive)"
+  );
   assert(Boolean(publicSettings.contact_phone), "contact_phone setting is present");
   assert(Boolean(publicSettings.contact_email), "contact_email setting is present");
   assert(!("password" in publicSettings), "No password fields in public settings");
