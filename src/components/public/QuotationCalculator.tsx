@@ -54,6 +54,21 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
   const [serverTotal, setServerTotal] = useState<number | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
 
+  // Inquiry Submission Modal State
+  const [modalOpen, setModalOpen] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [projectLocation, setProjectLocation] = useState("");
+  const [customerNotes, setCustomerNotes] = useState("");
+  const [isSubmittingInquiry, setIsSubmittingInquiry] = useState(false);
+  const [inquiryError, setInquiryError] = useState<string | null>(null);
+  const [inquirySuccessData, setInquirySuccessData] = useState<{
+    reference: string;
+    formattedTotal: string;
+    whatsappUrl: string;
+  } | null>(null);
+
   // Trigger authoritative server-side calculation
   const triggerServerCalculation = useCallback(
     async (currentStates: Record<number, SelectedItemState>) => {
@@ -152,6 +167,81 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
 
   const displayTotal = serverTotal !== null ? serverTotal : clientSubtotal;
   const activeCount = Object.values(itemStates).filter((s) => s.selected).length;
+
+  // Handle Inquiry Submission
+  const handleSubmitQuotationInquiry = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSubmittingInquiry) return;
+
+    setInquiryError(null);
+
+    if (!customerName.trim() || customerName.trim().length < 2) {
+      setInquiryError("Please enter your full name (at least 2 characters).");
+      return;
+    }
+    const cleanDigits = customerPhone.replace(/\D/g, "");
+    if (cleanDigits.length < 10) {
+      setInquiryError("Please enter a valid 10-digit phone number.");
+      return;
+    }
+
+    const quotationItemsPayload = sortedRates
+      .filter((r) => itemStates[r.id]?.selected)
+      .map((r) => ({
+        rateId: r.id,
+        quantity: itemStates[r.id]?.quantity ?? 0,
+      }));
+
+    if (quotationItemsPayload.length === 0) {
+      setInquiryError("Please select at least one quotation discipline before submitting.");
+      return;
+    }
+
+    setIsSubmittingInquiry(true);
+
+    try {
+      const fullMessage = [
+        projectLocation.trim() ? `Project Location: ${projectLocation.trim()}` : null,
+        `Built-Up Area: ${projectArea} sq.ft`,
+        customerNotes.trim() ? `Notes: ${customerNotes.trim()}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      const res = await fetch("/api/inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: customerName.trim(),
+          phone: customerPhone.trim(),
+          email: customerEmail.trim() || undefined,
+          interestedService: `Turnkey Quotation (${activeCount} disciplines)`,
+          message: fullMessage,
+          quotationItems: quotationItemsPayload,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        if (data.details?.fieldErrors) {
+          const firstErr = Object.values(data.details.fieldErrors).flat()[0];
+          throw new Error(String(firstErr) || "Validation failed");
+        }
+        throw new Error(data.message || data.error || "Failed to submit quotation inquiry");
+      }
+
+      setInquirySuccessData({
+        reference: data.reference,
+        formattedTotal: data.formattedTotal || formatINR(displayTotal),
+        whatsappUrl: data.whatsappUrl,
+      });
+    } catch (err: any) {
+      setInquiryError(err.message || "An unexpected error occurred. Please try again.");
+    } finally {
+      setIsSubmittingInquiry(false);
+    }
+  };
 
   return (
     <section id="quotation" className="py-24 bg-[#0D0F12] relative border-t border-[#2B313D]/50">
@@ -359,16 +449,224 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                 </div>
               </div>
 
-              <a
-                href="#contact"
-                className="px-8 py-4 rounded-xl bg-gradient-to-r from-[#C5A869] to-[#d4af37] text-neutral-950 font-black text-xs uppercase tracking-[0.15em] hover:brightness-110 shadow-lg hover:shadow-[#C5A869]/30 transition duration-300 active:scale-95 whitespace-nowrap"
+              <button
+                type="button"
+                onClick={() => {
+                  setInquirySuccessData(null);
+                  setInquiryError(null);
+                  setModalOpen(true);
+                }}
+                className="px-8 py-4 rounded-xl bg-gradient-to-r from-[#C5A869] to-[#d4af37] text-neutral-950 font-black text-xs uppercase tracking-[0.15em] hover:brightness-110 shadow-lg hover:shadow-[#C5A869]/30 transition duration-300 active:scale-95 whitespace-nowrap cursor-pointer"
               >
-                Discuss This Scope &rarr;
-              </a>
+                Submit Inquiry with this Estimate &rarr;
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Official Inquiry Submission Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-[#14171C] border border-[#2B313D] rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 space-y-6">
+            {inquirySuccessData ? (
+              /* Success confirmation state */
+              <div className="py-6 space-y-6 text-center">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto text-2xl font-bold">
+                  ✓
+                </div>
+
+                <div className="space-y-2">
+                  <span className="px-3 py-1 rounded bg-[#C5A869]/20 text-[#C5A869] font-mono font-bold text-xs uppercase tracking-wider">
+                    {inquirySuccessData.reference}
+                  </span>
+                  <h3 className="text-2xl font-black text-white">
+                    Quotation Inquiry Stored!
+                  </h3>
+                  <p className="text-sm text-neutral-300 max-w-sm mx-auto leading-relaxed">
+                    Your quotation breakdown and estimated total of{" "}
+                    <strong className="text-amber-400 font-mono">
+                      {inquirySuccessData.formattedTotal}
+                    </strong>{" "}
+                    have been saved in MySQL. Our engineers have been alerted.
+                  </p>
+                </div>
+
+                <div className="p-6 rounded-xl bg-[#0D0F12] border border-[#2B313D] space-y-4">
+                  <span className="text-xs font-mono uppercase tracking-wider text-neutral-400 block">
+                    Next Step: Continuation
+                  </span>
+                  <p className="text-xs text-neutral-300 leading-relaxed">
+                    Click below to open WhatsApp with your prefilled inquiry reference and proposal
+                    summary to connect directly with our engineering team:
+                  </p>
+
+                  <a
+                    href={inquirySuccessData.whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-950/40 active:scale-95"
+                  >
+                    <span>💬 Continue on WhatsApp</span>
+                    <span>&rarr;</span>
+                  </a>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setModalOpen(false);
+                      setInquirySuccessData(null);
+                    }}
+                    className="text-xs font-mono text-neutral-400 hover:text-white uppercase tracking-wider underline"
+                  >
+                    Close Window
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Quotation Inquiry Submission Form */
+              <form onSubmit={handleSubmitQuotationInquiry} className="space-y-5">
+                <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#2B313D]">
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#C5A869] font-bold">
+                      Official Engineering Proposal
+                    </span>
+                    <h3 className="text-xl font-bold text-white tracking-tight mt-1">
+                      Request Quotation Proposal
+                    </h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setModalOpen(false)}
+                    className="p-1.5 rounded-lg bg-neutral-800 text-neutral-400 hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Estimate Snapshot Banner */}
+                <div className="p-4 rounded-xl bg-[#0D0F12] border border-[#2B313D] flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 block">
+                      Built-Up Area &amp; Disciplines
+                    </span>
+                    <span className="text-xs font-mono text-white font-semibold mt-0.5 block">
+                      {projectArea} sq.ft • {activeCount} disciplines
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 block">
+                      Authoritative Total
+                    </span>
+                    <span className="text-base font-mono font-black text-amber-400">
+                      {formatINR(displayTotal)}
+                    </span>
+                  </div>
+                </div>
+
+                {inquiryError && (
+                  <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs">
+                    ⚠️ {inquiryError}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Full Name */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-mono uppercase tracking-wider text-neutral-300 block">
+                      Full Name <span className="text-[#C5A869]">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Er. Rajesh Sharma"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#0D0F12] border border-[#2B313D] focus:border-[#C5A869] text-sm text-white placeholder-neutral-500 focus:outline-hidden"
+                    />
+                  </div>
+
+                  {/* Phone */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-mono uppercase tracking-wider text-neutral-300 block">
+                      Phone Number <span className="text-[#C5A869]">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="+91 98765 43210"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#0D0F12] border border-[#2B313D] focus:border-[#C5A869] text-sm text-white placeholder-neutral-500 focus:outline-hidden font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Email */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-mono uppercase tracking-wider text-neutral-300 block">
+                      Email Address <span className="text-neutral-500">(Optional)</span>
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="client@example.com"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#0D0F12] border border-[#2B313D] focus:border-[#C5A869] text-sm text-white placeholder-neutral-500 focus:outline-hidden"
+                    />
+                  </div>
+
+                  {/* Location */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-mono uppercase tracking-wider text-neutral-300 block">
+                      Site Location <span className="text-neutral-500">(Optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Bardoli / Surat / Navsari"
+                      value={projectLocation}
+                      onChange={(e) => setProjectLocation(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#0D0F12] border border-[#2B313D] focus:border-[#C5A869] text-sm text-white placeholder-neutral-500 focus:outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                {/* Notes */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-mono uppercase tracking-wider text-neutral-300 block">
+                    Special Requirements / Site Conditions <span className="text-neutral-500">(Optional)</span>
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="e.g. Plot dimensions, number of floors, target commencement month..."
+                    value={customerNotes}
+                    onChange={(e) => setCustomerNotes(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#0D0F12] border border-[#2B313D] focus:border-[#C5A869] text-sm text-white placeholder-neutral-500 focus:outline-hidden"
+                  />
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={isSubmittingInquiry}
+                    className="w-full py-4 rounded-xl bg-gradient-to-r from-[#C5A869] to-[#d4af37] text-neutral-950 font-black text-xs uppercase tracking-[0.15em] hover:brightness-110 shadow-lg shadow-[#C5A869]/20 transition duration-300 active:scale-95 disabled:opacity-50 cursor-pointer"
+                  >
+                    {isSubmittingInquiry
+                      ? "Recording Quotation Inquiry..."
+                      : "Confirm & Submit Quotation Inquiry →"}
+                  </button>
+                  <p className="text-[11px] text-neutral-500 text-center mt-2.5">
+                    Inquiry and quotation line items will be stored securely in MySQL first.
+                  </p>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

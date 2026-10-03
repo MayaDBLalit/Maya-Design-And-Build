@@ -162,12 +162,25 @@ export function Footer({ settings }: FooterProps) {
 
           <div className="flex items-center gap-6">
             <Link
+              href="/terms"
+              className="text-neutral-500 hover:text-white transition uppercase tracking-widest text-[11px]"
+            >
+              Terms &amp; Conditions
+            </Link>
+            <Link
+              href="/privacy"
+              className="text-neutral-500 hover:text-white transition uppercase tracking-widest text-[11px]"
+            >
+              Privacy Policy
+            </Link>
+            <Link
               href="/admin/login"
               className="text-neutral-500 hover:text-[#C5A869] transition uppercase tracking-widest text-[11px]"
             >
               Admin Console &rarr;
             </Link>
           </div>
+
         </div>
       </div>
     </footer>

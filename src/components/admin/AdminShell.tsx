@@ -12,6 +12,7 @@ import {
   IconQuotation,
   IconUnits,
   IconSettings,
+  IconInquiries,
   IconLogOut,
   IconMenu,
   IconX,
@@ -25,6 +26,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { name: "Dashboard", href: "/admin/dashboard", icon: IconDashboard },
+  { name: "Inquiries", href: "/admin/inquiries", icon: IconInquiries },
   { name: "Services", href: "/admin/services", icon: IconServices },
   { name: "Projects", href: "/admin/projects", icon: IconProjects },
   { name: "Team Members", href: "/admin/team", icon: IconTeam },
@@ -33,6 +35,7 @@ const navItems: NavItem[] = [
   { name: "Units", href: "/admin/units", icon: IconUnits },
   { name: "Website Settings", href: "/admin/settings", icon: IconSettings },
 ];
+
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

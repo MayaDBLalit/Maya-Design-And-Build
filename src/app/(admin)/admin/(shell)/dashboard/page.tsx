@@ -10,8 +10,10 @@ import {
   IconQuotation,
   IconUnits,
   IconSettings,
+  IconInquiries,
   IconPlus,
 } from "@/components/admin/Icons";
+
 
 interface DashboardStats {
   servicesCount: number;
@@ -92,6 +94,41 @@ export default function AdminDashboardPage() {
 
       {/* Primary Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {/* Customer Inquiries Card */}
+        <div className="rounded-xl border border-[#2B313D] bg-[#14171C] p-5 shadow-sm hover:border-[#C5A869]/50 transition group">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400">
+              Customer Inquiries
+            </span>
+            <div className="p-2.5 rounded-lg bg-amber-500/10 text-amber-400 group-hover:scale-110 transition">
+              <IconInquiries className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <div className="text-3xl font-black text-white flex items-baseline gap-2">
+              <span>{isLoading ? "—" : stats?.inquiriesCount || 0}</span>
+              {(stats?.newInquiriesCount || 0) > 0 && (
+                <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded-full">
+                  {stats?.newInquiriesCount} new
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-neutral-400 mt-1">
+              {(stats?.newInquiriesCount || 0) > 0
+                ? `${stats?.newInquiriesCount} pending consultation leads`
+                : "All inquiries handled"}
+            </p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-neutral-800">
+            <Link
+              href="/admin/inquiries"
+              className="text-xs text-[#C5A869] hover:underline font-medium inline-flex items-center gap-1"
+            >
+              View Inquiries &rarr;
+            </Link>
+          </div>
+        </div>
+
         {/* Core Services Card */}
         <div className="rounded-xl border border-[#2B313D] bg-[#14171C] p-5 shadow-sm hover:border-[#C5A869]/50 transition group">
           <div className="flex items-center justify-between">

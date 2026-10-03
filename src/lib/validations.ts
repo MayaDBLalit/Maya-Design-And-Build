@@ -174,3 +174,57 @@ export const settingsUpdateSchema = z.array(
 );
 
 export type SettingsUpdateInput = z.infer<typeof settingsUpdateSchema>;
+
+// ==============================================================================
+// 10. INQUIRIES & LEAD CAPTURE SCHEMAS
+// ==============================================================================
+export const inquiryStatusEnum = z.enum(["new", "contacted", "in_progress", "closed"]);
+
+export const inquirySubmissionSchema = z.object({
+  fullName: z
+    .string()
+    .min(2, "Full name must be at least 2 characters")
+    .max(150, "Full name cannot exceed 150 characters")
+    .trim(),
+  phone: z
+    .string()
+    .min(8, "Phone number is too short")
+    .max(25, "Phone number is too long")
+    .trim()
+    .refine((val) => {
+      // Must contain only digits, plus, hyphens, spaces, or brackets
+      if (!/^[+0-9\s\-()]+$/.test(val)) return false;
+      const digits = val.replace(/\D/g, "");
+      return digits.length >= 10 && digits.length <= 15;
+    }, {
+      message: "Please enter a valid phone number (10 to 15 digits)",
+    }),
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email("Invalid email format")
+    .optional()
+    .or(z.literal("")),
+  interestedService: z.string().max(150).optional().nullable(),
+  message: z.string().max(5000).optional().nullable(),
+  tentativeBudget: z.union([z.number(), z.string()]).optional().nullable(),
+  quotationItems: z
+    .array(
+      z.object({
+        rateId: z.number().int().positive("Invalid rate ID"),
+        quantity: z.number().min(0, "Quantity cannot be negative"),
+      })
+    )
+    .optional(),
+});
+
+export type InquirySubmissionInput = z.infer<typeof inquirySubmissionSchema>;
+
+export const adminInquiryUpdateSchema = z.object({
+  status: inquiryStatusEnum.optional(),
+  adminNotes: z.string().max(5000).optional().nullable(),
+});
+
+export type AdminInquiryUpdateInput = z.infer<typeof adminInquiryUpdateSchema>;
+
