@@ -11,6 +11,7 @@ import { GallerySection } from "@/components/public/GallerySection";
 import { QuotationCalculator } from "@/components/public/QuotationCalculator";
 import { ContactSection } from "@/components/public/ContactSection";
 import { Footer } from "@/components/public/Footer";
+import { FloatingCallButton } from "@/components/public/FloatingCallButton";
 import {
   getActiveServices,
   getActiveProjects,
@@ -80,6 +81,9 @@ export default async function HomePage() {
 
       {/* 12. Footer */}
       <Footer settings={settings} />
+
+      {/* 13. Dynamic Floating Call Action Button */}
+      <FloatingCallButton phone={settings.contact_phone} />
     </div>
   );
 }

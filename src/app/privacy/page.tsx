@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { getPublicSettings } from "@/lib/public-api";
 import { Footer } from "@/components/public/Footer";
+import { FloatingCallButton } from "@/components/public/FloatingCallButton";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +87,9 @@ export default async function PrivacyPage() {
       </main>
 
       <Footer settings={settings} />
+
+      {/* Floating Call Action Button */}
+      <FloatingCallButton phone={settings.contact_phone} />
     </div>
   );
 }

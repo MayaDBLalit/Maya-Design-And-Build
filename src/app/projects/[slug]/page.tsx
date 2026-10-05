@@ -5,6 +5,7 @@ import { getProjectBySlug } from "@/lib/public-api";
 import { ElevationSlider } from "@/components/public/ElevationSlider";
 import { Navbar } from "@/components/public/Navbar";
 import { Footer } from "@/components/public/Footer";
+import { FloatingCallButton } from "@/components/public/FloatingCallButton";
 import { formatINR } from "@/lib/formatters";
 import { getPublicSettings } from "@/lib/public-api";
 
@@ -265,6 +266,9 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       </main>
 
       <Footer settings={settings} />
+
+      {/* Floating Call Action Button */}
+      <FloatingCallButton phone={settings.contact_phone} />
     </div>
   );
 }
