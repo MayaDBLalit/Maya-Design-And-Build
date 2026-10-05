@@ -8,6 +8,8 @@ import { Footer } from "@/components/public/Footer";
 import { formatINR } from "@/lib/formatters";
 import { getPublicSettings } from "@/lib/public-api";
 
+export const dynamic = "force-dynamic";
+
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
 }

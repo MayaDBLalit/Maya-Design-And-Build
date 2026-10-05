@@ -26,6 +26,9 @@ export interface EmailSendResult {
  * Checks whether SMTP credentials are fully populated in the environment.
  */
 export function isEmailConfigured(): boolean {
+  if (process.env.TEST_SKIP_EMAIL === "true") {
+    return false;
+  }
   const host = process.env.SMTP_HOST?.trim();
   const user = process.env.SMTP_USER?.trim();
   const pass = process.env.SMTP_PASSWORD?.trim();

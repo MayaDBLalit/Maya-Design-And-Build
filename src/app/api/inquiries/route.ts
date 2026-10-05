@@ -10,6 +10,18 @@ import { formatINR } from "@/lib/formatters";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+
+    // Anti-spam honeypot defense: reject automated bots populating hidden trap fields
+    if (body.website || body.honeypot) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Spam submission rejected",
+        },
+        { status: 400 }
+      );
+    }
+
     const validation = inquirySubmissionSchema.safeParse(body);
 
     if (!validation.success) {

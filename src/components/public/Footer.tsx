@@ -14,6 +14,8 @@ export function Footer({ settings }: FooterProps) {
     "Shop 5, Seven leaf arcade, Dhamdod-Lumbha Road, Bardoli, Dis. Surat";
   const instagramUrl = settings.instagram_url;
   const facebookUrl = settings.facebook_url;
+  const linkedinUrl = settings.linkedin_url;
+  const youtubeUrl = settings.youtube_url;
 
   return (
     <footer className="bg-[#0B0D10] text-[#F4F4F6] border-t border-[#2B313D] pt-16 pb-12">
@@ -36,7 +38,7 @@ export function Footer({ settings }: FooterProps) {
             </p>
 
             {/* Social Media Links (if configured) */}
-            <div className="flex items-center gap-3 pt-2">
+            <div className="flex flex-wrap items-center gap-3 pt-2">
               {instagramUrl && (
                 <a
                   href={instagramUrl}
@@ -55,6 +57,26 @@ export function Footer({ settings }: FooterProps) {
                   className="px-3 py-1.5 rounded bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869] text-xs font-mono text-neutral-300 hover:text-white transition"
                 >
                   Facebook
+                </a>
+              )}
+              {linkedinUrl && (
+                <a
+                  href={linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869] text-xs font-mono text-neutral-300 hover:text-white transition"
+                >
+                  LinkedIn
+                </a>
+              )}
+              {youtubeUrl && (
+                <a
+                  href={youtubeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869] text-xs font-mono text-neutral-300 hover:text-white transition"
+                >
+                  YouTube
                 </a>
               )}
             </div>
@@ -172,12 +194,6 @@ export function Footer({ settings }: FooterProps) {
               className="text-neutral-500 hover:text-white transition uppercase tracking-widest text-[11px]"
             >
               Privacy Policy
-            </Link>
-            <Link
-              href="/admin/login"
-              className="text-neutral-500 hover:text-[#C5A869] transition uppercase tracking-widest text-[11px]"
-            >
-              Admin Console &rarr;
             </Link>
           </div>
 
