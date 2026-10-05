@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Modal } from "@/components/admin/Modal";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { FileUpload } from "@/components/admin/FileUpload";
@@ -12,6 +12,8 @@ import {
   IconSearch,
   IconImages,
   IconCheck,
+  IconUpload,
+  IconAlert,
 } from "@/components/admin/Icons";
 
 interface ProjectItem {
@@ -79,6 +81,14 @@ export default function AdminProjectsPage() {
   const [newMediaUrl, setNewMediaUrl] = useState("");
   const [newMediaType, setNewMediaType] = useState<"image" | "video">("image");
   const [isAttachingMedia, setIsAttachingMedia] = useState(false);
+
+  // Multi-image upload states
+  const [isMultiUploading, setIsMultiUploading] = useState(false);
+  const [multiUploadProgress, setMultiUploadProgress] = useState<{ current: number; total: number } | null>(null);
+  const [multiUploadError, setMultiUploadError] = useState<string | null>(null);
+  const [multiUploadSuccess, setMultiUploadSuccess] = useState<string | null>(null);
+  const [multiDragActive, setMultiDragActive] = useState(false);
+  const multiFileInputRef = useRef<HTMLInputElement>(null);
 
   // Delete Confirmation State
   const [deleteTarget, setDeleteTarget] = useState<ProjectItem | null>(null);
@@ -204,6 +214,9 @@ export default function AdminProjectsPage() {
     setActiveMediaProject(project);
     setIsLoadingMedia(true);
     setNewMediaUrl("");
+    setMultiUploadError(null);
+    setMultiUploadSuccess(null);
+    setMultiUploadProgress(null);
     try {
       const res = await fetch(`/api/admin/projects/${project.id}/media`);
       const data = await res.json();
@@ -214,6 +227,98 @@ export default function AdminProjectsPage() {
       console.error("Error fetching media:", err);
     } finally {
       setIsLoadingMedia(false);
+    }
+  };
+
+  // Multi-image upload handler
+  const handleMultiUpload = async (files: FileList | File[]) => {
+    if (!activeMediaProject) return;
+    const fileArray = Array.from(files).filter((f) => f.type.startsWith("image/"));
+    if (fileArray.length === 0) {
+      setMultiUploadError("Please select valid image files (PNG, JPG, WebP, AVIF)");
+      return;
+    }
+
+    setIsMultiUploading(true);
+    setMultiUploadError(null);
+    setMultiUploadSuccess(null);
+    setMultiUploadProgress({ current: 0, total: fileArray.length });
+
+    const newItems: ProjectMediaItem[] = [];
+
+    for (let i = 0; i < fileArray.length; i++) {
+      const file = fileArray[i];
+      setMultiUploadProgress({ current: i + 1, total: fileArray.length });
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("purpose", "project");
+
+        const uploadRes = await fetch("/api/admin/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const uploadData = await uploadRes.json();
+        if (!uploadRes.ok) {
+          throw new Error(uploadData.message || uploadData.error || `Upload failed for ${file.name}`);
+        }
+
+        const attachRes = await fetch(`/api/admin/projects/${activeMediaProject.id}/media`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mediaUrl: uploadData.url,
+            mediaType: "image",
+            displayOrder: projectMediaList.length + newItems.length,
+          }),
+        });
+
+        const attachData = await attachRes.json();
+        if (!attachRes.ok) {
+          throw new Error(attachData.message || attachData.error || "Failed to attach to project");
+        }
+
+        newItems.push(attachData.media);
+      } catch (err: any) {
+        console.error(`Error uploading ${file.name}:`, err);
+        setMultiUploadError(`Error on file "${file.name}": ${err.message}`);
+      }
+    }
+
+    if (newItems.length > 0) {
+      setProjectMediaList((prev) => [...prev, ...newItems]);
+      setMultiUploadSuccess(`Successfully added ${newItems.length} image(s) to ${activeMediaProject.title}.`);
+    }
+
+    setIsMultiUploading(false);
+    setMultiUploadProgress(null);
+    if (multiFileInputRef.current) {
+      multiFileInputRef.current.value = "";
+    }
+  };
+
+  const handleUpdateDisplayOrder = async (mediaId: number, newOrder: number) => {
+    if (!activeMediaProject) return;
+    try {
+      const res = await fetch(
+        `/api/admin/projects/${activeMediaProject.id}/media/${mediaId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ displayOrder: newOrder }),
+        }
+      );
+      if (res.ok) {
+        setProjectMediaList((prev) =>
+          prev
+            .map((item) => (item.id === mediaId ? { ...item, displayOrder: newOrder } : item))
+            .sort((a, b) => a.displayOrder - b.displayOrder || a.id - b.id)
+        );
+      }
+    } catch (err) {
+      console.error("Failed to update display order:", err);
     }
   };
 
@@ -688,85 +793,223 @@ export default function AdminProjectsPage() {
       {activeMediaProject && (
         <Modal
           isOpen={true}
-          onClose={() => setActiveMediaProject(null)}
-          title={`Gallery Media: ${activeMediaProject.title}`}
-          maxWidth="3xl"
+          onClose={() => {
+            setActiveMediaProject(null);
+            setMultiUploadProgress(null);
+            setMultiUploadError(null);
+            setMultiUploadSuccess(null);
+          }}
+          title={`Project Visual Documentation — ${activeMediaProject.title}`}
+          maxWidth="4xl"
         >
           <div className="space-y-6">
-            <p className="text-xs text-neutral-400">
-              Attach multiple images or walkthrough videos to this project.
-            </p>
-
-            {/* Upload & Attach New Media */}
-            <div className="p-4 rounded-lg bg-[#0F1115] border border-[#2B313D] space-y-3">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-                Add Media File
-              </h4>
-
-              <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2 text-xs text-neutral-300 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="mediaType"
-                    checked={newMediaType === "image"}
-                    onChange={() => setNewMediaType("image")}
-                    className="text-[#C5A869] focus:ring-[#C5A869]"
-                  />
-                  <span>Image</span>
-                </label>
-                <label className="flex items-center gap-2 text-xs text-neutral-300 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="mediaType"
-                    checked={newMediaType === "video"}
-                    onChange={() => setNewMediaType("video")}
-                    className="text-[#C5A869] focus:ring-[#C5A869]"
-                  />
-                  <span>Video (≤ 50MB)</span>
-                </label>
+            {/* Project Context Scope Banner */}
+            <div className="p-3.5 rounded-lg bg-[#0F1115] border border-[#2B313D] flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div>
+                <span className="text-neutral-400">Target Project: </span>
+                <span className="font-bold text-white text-sm">{activeMediaProject.title}</span>
+                <span className="text-neutral-500 ml-2 font-mono text-[11px]">
+                  (ID: #{activeMediaProject.id})
+                </span>
               </div>
-
-              <FileUpload
-                value={newMediaUrl}
-                onChange={(url) => setNewMediaUrl(url)}
-                acceptType={newMediaType}
-                helperText={
-                  newMediaType === "image"
-                    ? "Upload high resolution project photo"
-                    : "Upload project walkthrough video (MP4/WebM)"
-                }
-              />
-
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={handleAttachMedia}
-                  disabled={!newMediaUrl || isAttachingMedia}
-                  className="px-4 py-2 text-xs font-bold uppercase tracking-wider bg-[#C5A869] text-neutral-950 rounded-lg hover:bg-[#d4af37] disabled:opacity-50 transition cursor-pointer"
-                >
-                  {isAttachingMedia ? "Attaching..." : "Attach to Project"}
-                </button>
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-400 border border-emerald-800/50 text-[10px] font-mono uppercase tracking-wider">
+                  Isolated Project Scope
+                </span>
+                <span className="text-neutral-400 font-mono text-[11px]">
+                  /projects/{activeMediaProject.slug}
+                </span>
               </div>
             </div>
 
-            {/* Existing Project Media List */}
+            {/* Multi-Image Fast Upload Dropzone */}
+            <div className="p-4 rounded-xl bg-[#0F1115] border border-[#2B313D] space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                    <IconUpload className="w-4 h-4 text-[#C5A869]" />
+                    Upload Multiple Project Images
+                  </h4>
+                  <p className="text-[11px] text-neutral-400 mt-0.5">
+                    Select or drag multiple photos simultaneously. All images are securely compressed to WebP and bound exclusively to this project.
+                  </p>
+                </div>
+              </div>
+
+              {/* Drag & Drop Multi-file Area */}
+              <div
+                onDragEnter={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setMultiDragActive(true);
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setMultiDragActive(true);
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setMultiDragActive(false);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setMultiDragActive(false);
+                  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    handleMultiUpload(e.dataTransfer.files);
+                  }
+                }}
+                onClick={() => !isMultiUploading && multiFileInputRef.current?.click()}
+                className={`relative cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-all ${
+                  multiDragActive
+                    ? "border-[#C5A869] bg-[#C5A869]/10"
+                    : "border-[#2B313D] hover:border-neutral-500 bg-[#14171C]/60"
+                }`}
+              >
+                <input
+                  ref={multiFileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/jpeg,image/png,image/webp,image/avif"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      handleMultiUpload(e.target.files);
+                    }
+                  }}
+                  className="hidden"
+                  disabled={isMultiUploading}
+                />
+
+                {isMultiUploading && multiUploadProgress ? (
+                  <div className="flex flex-col items-center justify-center gap-2 py-2">
+                    <div className="flex items-center gap-2 text-sm text-[#C5A869]">
+                      <svg className="animate-spin h-5 w-5 text-[#C5A869]" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      </svg>
+                      <span className="font-semibold">
+                        Optimizing &amp; uploading image {multiUploadProgress.current} of {multiUploadProgress.total}...
+                      </span>
+                    </div>
+                    <div className="w-48 bg-neutral-800 rounded-full h-1.5 overflow-hidden">
+                      <div
+                        className="bg-[#C5A869] h-full transition-all duration-300"
+                        style={{
+                          width: `${(multiUploadProgress.current / multiUploadProgress.total) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-1.5">
+                    <div className="p-2.5 rounded-full bg-neutral-800 text-[#C5A869] mb-1">
+                      <IconUpload className="w-5 h-5" />
+                    </div>
+                    <div className="text-xs text-neutral-300">
+                      <span className="font-semibold text-[#C5A869]">Click to select multiple photos</span> or drag &amp; drop here
+                    </div>
+                    <p className="text-[11px] text-neutral-500">
+                      PNG, JPG, WebP up to 10MB each (automatically converted to WebP with Sharp)
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {multiUploadError && (
+                <div className="p-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
+                  <IconAlert className="w-4 h-4 flex-shrink-0" />
+                  <span>{multiUploadError}</span>
+                </div>
+              )}
+
+              {multiUploadSuccess && (
+                <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2">
+                  <IconCheck className="w-4 h-4 flex-shrink-0" />
+                  <span>{multiUploadSuccess}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Single File / Video Attachment (Collapsible) */}
+            <details className="rounded-lg bg-[#0F1115] border border-[#2B313D] p-3 text-xs">
+              <summary className="font-semibold text-neutral-300 cursor-pointer hover:text-white uppercase tracking-wider">
+                + Add Single File / Walkthrough Video / Direct URL
+              </summary>
+              <div className="mt-4 space-y-3 pt-3 border-t border-neutral-800">
+                <div className="flex items-center gap-4">
+                  <label className="flex items-center gap-2 text-xs text-neutral-300 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="mediaType"
+                      checked={newMediaType === "image"}
+                      onChange={() => setNewMediaType("image")}
+                      className="text-[#C5A869] focus:ring-[#C5A869]"
+                    />
+                    <span>Image</span>
+                  </label>
+                  <label className="flex items-center gap-2 text-xs text-neutral-300 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="mediaType"
+                      checked={newMediaType === "video"}
+                      onChange={() => setNewMediaType("video")}
+                      className="text-[#C5A869] focus:ring-[#C5A869]"
+                    />
+                    <span>Video (≤ 50MB)</span>
+                  </label>
+                </div>
+
+                <FileUpload
+                  value={newMediaUrl}
+                  onChange={(url) => setNewMediaUrl(url)}
+                  acceptType={newMediaType}
+                  purpose="project"
+                  helperText={
+                    newMediaType === "image"
+                      ? "Upload high resolution project photo"
+                      : "Upload project walkthrough video (MP4/WebM)"
+                  }
+                />
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleAttachMedia}
+                    disabled={!newMediaUrl || isAttachingMedia}
+                    className="px-4 py-2 text-xs font-bold uppercase tracking-wider bg-[#C5A869] text-neutral-950 rounded-lg hover:bg-[#d4af37] disabled:opacity-50 transition cursor-pointer"
+                  >
+                    {isAttachingMedia ? "Attaching..." : "Attach to Project"}
+                  </button>
+                </div>
+              </div>
+            </details>
+
+            {/* Attached Media List for this project */}
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400 mb-3">
-                Attached Media ({projectMediaList.length})
-              </h4>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+                  Attached Project Images ({projectMediaList.length})
+                </h4>
+                <span className="text-[11px] font-mono text-neutral-500">
+                  Ordered by display priority
+                </span>
+              </div>
 
               {isLoadingMedia ? (
                 <div className="text-center py-6 text-xs text-neutral-400">Loading media...</div>
               ) : projectMediaList.length === 0 ? (
-                <p className="text-xs text-neutral-500 py-4 text-center border border-dashed border-[#2B313D] rounded-lg">
-                  No additional gallery items attached to this project yet.
-                </p>
+                <div className="text-xs text-neutral-500 py-8 text-center border border-dashed border-[#2B313D] rounded-xl space-y-1">
+                  <p className="font-semibold text-neutral-400">No additional images attached yet</p>
+                  <p className="text-[11px]">Upload images above to create a project-specific gallery on its details page.</p>
+                </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {projectMediaList.map((item) => (
                     <div
                       key={item.id}
-                      className="relative group rounded-lg overflow-hidden border border-[#2B313D] bg-neutral-900 aspect-video"
+                      className="relative rounded-lg overflow-hidden border border-[#2B313D] bg-neutral-900 aspect-video flex flex-col justify-between group"
                     >
                       {item.mediaType === "video" ? (
                         <video
@@ -782,19 +1025,43 @@ export default function AdminProjectsPage() {
                           className="w-full h-full object-cover"
                         />
                       )}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveMedia(item.id)}
-                          className="p-2 rounded bg-red-600 hover:bg-red-700 text-white transition cursor-pointer"
-                          title="Remove media"
-                        >
-                          <IconTrash className="w-4 h-4" />
-                        </button>
+
+                      {/* Hover Overlay with Delete & Order Controls */}
+                      <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 transition p-2.5 flex flex-col justify-between">
+                        <div className="flex items-center justify-between">
+                          <span className="px-1.5 py-0.5 rounded bg-black/80 text-[10px] font-mono text-[#C5A869]">
+                            {item.mediaType}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveMedia(item.id)}
+                            className="p-1.5 rounded bg-red-600 hover:bg-red-700 text-white transition cursor-pointer"
+                            title="Delete this image"
+                          >
+                            <IconTrash className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 bg-black/90 p-1.5 rounded border border-neutral-700">
+                          <span className="text-[10px] text-neutral-400 font-mono">Order:</span>
+                          <input
+                            type="number"
+                            min="0"
+                            value={item.displayOrder}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              if (!isNaN(val)) {
+                                handleUpdateDisplayOrder(item.id, val);
+                              }
+                            }}
+                            className="w-14 px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-700 text-white text-xs font-mono text-center focus:outline-hidden focus:border-[#C5A869]"
+                          />
+                        </div>
                       </div>
-                      <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-black/80 text-[10px] font-mono text-neutral-300">
-                        {item.mediaType}
-                      </span>
+
+                      <div className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-black/80 text-[9px] font-mono text-neutral-400 pointer-events-none group-hover:opacity-0 transition">
+                        #{item.displayOrder}
+                      </div>
                     </div>
                   ))}
                 </div>

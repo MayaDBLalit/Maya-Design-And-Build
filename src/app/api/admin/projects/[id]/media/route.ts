@@ -61,6 +61,58 @@ export async function POST(
     }
 
     const body = await request.json();
+
+    // Support batch insertion if body is an array or has items array
+    if (Array.isArray(body) || (body && Array.isArray(body.items))) {
+      const items = Array.isArray(body) ? body : body.items;
+      if (items.length === 0) {
+        return NextResponse.json(
+          { error: "Validation Failed", message: "No media items provided" },
+          { status: 400 }
+        );
+      }
+
+      const validatedItems = [];
+      for (const item of items) {
+        const validation = projectMediaSchema.safeParse({ ...item, projectId });
+        if (!validation.success) {
+          return NextResponse.json(
+            { error: "Validation Failed", details: validation.error.flatten() },
+            { status: 400 }
+          );
+        }
+        validatedItems.push(validation.data);
+      }
+
+      const createdMediaList = [];
+      for (const item of validatedItems) {
+        const [insertResult] = await db.insert(projectMedia).values({
+          projectId,
+          mediaUrl: item.mediaUrl,
+          mediaType: item.mediaType,
+          displayOrder: item.displayOrder,
+        });
+
+        const [created] = await db
+          .select()
+          .from(projectMedia)
+          .where(eq(projectMedia.id, insertResult.insertId))
+          .limit(1);
+
+        if (created) createdMediaList.push(created);
+      }
+
+      return NextResponse.json(
+        {
+          success: true,
+          message: `${createdMediaList.length} media items attached to project successfully`,
+          media: createdMediaList,
+        },
+        { status: 201 }
+      );
+    }
+
+    // Single item insertion
     const validation = projectMediaSchema.safeParse({ ...body, projectId });
     if (!validation.success) {
       return NextResponse.json(

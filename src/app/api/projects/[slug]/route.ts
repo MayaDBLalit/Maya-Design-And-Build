@@ -33,7 +33,7 @@ export async function GET(
       })
       .from(projectMedia)
       .where(eq(projectMedia.projectId, project.id))
-      .orderBy(asc(projectMedia.displayOrder));
+      .orderBy(asc(projectMedia.displayOrder), asc(projectMedia.id));
 
     // Exclude internal client private numbers from public response
     const { clientNumber, ...publicProject } = project;

@@ -112,6 +112,18 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             </div>
           </div>
 
+          {/* Main Project Hero Showcase Image */}
+          {project.mainImageUrl && (
+            <div className="relative h-96 sm:h-[480px] w-full rounded-2xl overflow-hidden border border-[#2B313D] bg-neutral-900 shadow-2xl">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={project.mainImageUrl}
+                alt={project.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+
           {/* Elevation Transformation Slider (if before/after exist) */}
           {hasElevationComparison && (
             <div className="space-y-4 p-6 sm:p-8 rounded-2xl bg-[#14171C] border border-[#2B313D]">
@@ -128,18 +140,6 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                 oldElevationUrl={project.oldElevationUrl!}
                 newElevationUrl={project.newElevationUrl!}
                 projectTitle={project.title}
-              />
-            </div>
-          )}
-
-          {/* Main Project Hero Image (if no elevation slider, or as showcase) */}
-          {!hasElevationComparison && project.mainImageUrl && (
-            <div className="relative h-96 sm:h-[480px] w-full rounded-2xl overflow-hidden border border-[#2B313D] bg-neutral-900 shadow-2xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={project.mainImageUrl}
-                alt={project.title}
-                className="w-full h-full object-cover"
               />
             </div>
           )}
@@ -213,12 +213,12 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                   Project Gallery
                 </span>
                 <h2 className="text-2xl font-bold text-white tracking-tight">
-                  Additional Visual Documentation
+                  Additional Visual Documentation ({project.media.length})
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {project.media.map((item) => (
+                {project.media.map((item, idx) => (
                   <div
                     key={item.id}
                     className="rounded-xl overflow-hidden border border-[#2B313D] bg-neutral-900 aspect-video relative group"
@@ -233,7 +233,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={item.mediaUrl}
-                        alt="Project media detail"
+                        alt={`${project.title} - Visual documentation ${idx + 1}`}
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                         loading="lazy"
                       />
