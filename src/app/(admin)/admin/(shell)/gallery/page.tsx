@@ -108,6 +108,7 @@ export default function AdminGalleryPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          thumbnailUrl: formData.thumbnailUrl?.trim() || null,
           displayOrder: Number(formData.displayOrder),
           durationSeconds: formData.durationSeconds ? Number(formData.durationSeconds) : null,
           fileSizeBytes: formData.fileSizeBytes ? Number(formData.fileSizeBytes) : null,
@@ -232,12 +233,20 @@ export default function AdminGalleryPage() {
               <div>
                 <div className="relative aspect-video bg-neutral-900 overflow-hidden">
                   {item.mediaType === "video" ? (
-                    <video
-                      src={item.mediaUrl}
-                      className="w-full h-full object-cover"
-                      muted
-                      playsInline
-                    />
+                    <div className="relative w-full h-full">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={item.thumbnailUrl || "/images/video-placeholder.svg"}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-10 h-10 rounded-full bg-black/75 border border-[#C5A869]/80 text-[#C5A869] flex items-center justify-center pl-0.5 text-xs shadow-lg">
+                          ▶
+                        </div>
+                      </div>
+                    </div>
                   ) : (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -348,7 +357,10 @@ export default function AdminGalleryPage() {
               onUploadDetails={(details) => {
                 setFormData((prev) => ({
                   ...prev,
-                  thumbnailUrl: details.thumbnailUrl || prev.thumbnailUrl,
+                  thumbnailUrl:
+                    prev.mediaType === "video"
+                      ? prev.thumbnailUrl
+                      : (details.thumbnailUrl || prev.thumbnailUrl),
                   durationSeconds:
                     details.durationSeconds !== undefined && details.durationSeconds !== null
                       ? Math.round(details.durationSeconds)
@@ -364,6 +376,18 @@ export default function AdminGalleryPage() {
                   : "Upload MP4, WebM up to 50MB (max 1 minute duration)"
               }
             />
+
+            {/* Conditional Video Thumbnail Field (Optional) */}
+            {formData.mediaType === "video" && (
+              <FileUpload
+                label="Video Thumbnail"
+                value={formData.thumbnailUrl || ""}
+                onChange={(url) => setFormData((prev) => ({ ...prev, thumbnailUrl: url }))}
+                purpose="gallery"
+                acceptType="image"
+                helperText="Upload an optional custom cover image for this video (JPG, PNG, WebP up to 10MB). If omitted, the default video placeholder will be displayed."
+              />
+            )}
 
 
             {formData.mediaType === "video" && (

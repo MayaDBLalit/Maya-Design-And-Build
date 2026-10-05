@@ -12,8 +12,6 @@ interface SettingItem {
 }
 
 const SETTING_LABELS: Record<string, { label: string; group: string; type?: "text" | "textarea" | "url" | "email" }> = {
-  site_name: { label: "Company / Site Name", group: "General" },
-  tagline: { label: "Brand Tagline", group: "General" },
   hero_headline: { label: "Homepage Hero Headline", group: "General" },
   hero_subheadline: { label: "Homepage Hero Subheadline", group: "General", type: "textarea" },
   about_summary: { label: "About Maya Summary", group: "General", type: "textarea" },
@@ -47,7 +45,9 @@ export default function AdminSettingsPage() {
 
       const map: Record<string, string> = {};
       (data.settings || []).forEach((item: SettingItem) => {
-        map[item.keyName] = item.valueContent || "";
+        if (SETTING_LABELS[item.keyName]) {
+          map[item.keyName] = item.valueContent || "";
+        }
       });
 
       // Ensure all defined keys exist in state
@@ -78,9 +78,9 @@ export default function AdminSettingsPage() {
     setIsSaving(true);
     setError(null);
 
-    const payload = Object.entries(settingsMap).map(([keyName, valueContent]) => ({
+    const payload = Object.keys(SETTING_LABELS).map((keyName) => ({
       keyName,
-      valueContent: valueContent.trim() || null,
+      valueContent: (settingsMap[keyName] || "").trim() || null,
     }));
 
     try {

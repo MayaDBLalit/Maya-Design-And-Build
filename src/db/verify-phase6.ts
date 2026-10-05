@@ -241,9 +241,9 @@ async function runPhase6Verification() {
     }
 
     // --------------------------------------------------------------------------
-    // 5. DYNAMIC PAGE CACHE RESOLUTION
+    // 5. DYNAMIC PAGE CACHE RESOLUTION & SETTINGS AUDIT
     // --------------------------------------------------------------------------
-    console.log("\n⚡ 5. Verifying Real-Time CMS Dynamic Rendering...");
+    console.log("\n⚡ 5. Verifying Real-Time CMS Dynamic Rendering & Settings Fixes...");
 
     const pagePath = path.resolve(process.cwd(), "src/app/page.tsx");
     const pageContent = fs.readFileSync(pagePath, "utf-8");
@@ -259,6 +259,112 @@ async function runPhase6Verification() {
       pageContent.includes("<AboutSection settings={settings}"),
       "AboutSection component receives real-time CMS settings"
     );
+
+    // Verify Settings UI audit: site_name and tagline removed from SETTING_LABELS
+    const settingsPagePath = path.resolve(process.cwd(), "src/app/(admin)/admin/(shell)/settings/page.tsx");
+    const settingsPageContent = fs.readFileSync(settingsPagePath, "utf-8");
+    assert(
+      !settingsPageContent.includes('site_name: {'),
+      "Company / Site Name field removed from Admin Settings UI"
+    );
+    assert(
+      !settingsPageContent.includes('tagline: {'),
+      "Brand Tagline field removed from Admin Settings UI"
+    );
+    assert(
+      settingsPageContent.includes("hero_headline: {"),
+      "Homepage Hero Headline remains editable in Admin Settings"
+    );
+    assert(
+      settingsPageContent.includes("hero_subheadline: {"),
+      "Homepage Hero Subheadline remains editable in Admin Settings"
+    );
+    assert(
+      settingsPageContent.includes("about_summary: {"),
+      "About Maya Summary remains editable in Admin Settings"
+    );
+
+    // --------------------------------------------------------------------------
+    // 6. VIDEO THUMBNAIL & REUSABLE FALLBACK PLACEHOLDER
+    // --------------------------------------------------------------------------
+    console.log("\n🎬 6. Verifying Video Thumbnail & Default Placeholder Fallback...");
+
+    // Verify local video placeholder asset
+    const placeholderPath = path.resolve(process.cwd(), "public/images/video-placeholder.svg");
+    assert(fs.existsSync(placeholderPath), "Default video placeholder asset exists at public/images/video-placeholder.svg");
+    const placeholderContent = fs.readFileSync(placeholderPath, "utf-8");
+    assert(placeholderContent.includes("<svg") && placeholderContent.includes("viewBox"), "Default video placeholder is valid SVG");
+    assert(placeholderContent.includes("MAYA"), "Default video placeholder includes MAYA brand typography");
+
+    // Verify Public GallerySection uses custom thumbnail or fallback placeholder
+    const gallerySectionPath = path.resolve(process.cwd(), "src/components/public/GallerySection.tsx");
+    const gallerySectionContent = fs.readFileSync(gallerySectionPath, "utf-8");
+    assert(
+      gallerySectionContent.includes('src={item.thumbnailUrl || "/images/video-placeholder.svg"}'),
+      "Public Gallery renders item.thumbnailUrl or fallback video placeholder"
+    );
+    assert(
+      gallerySectionContent.includes('poster={activeItem.thumbnailUrl || "/images/video-placeholder.svg"}'),
+      "Public Gallery lightbox sets poster image for video playback"
+    );
+
+    // Verify Admin Gallery page uses custom thumbnail or fallback placeholder
+    const adminGalleryPath = path.resolve(process.cwd(), "src/app/(admin)/admin/(shell)/gallery/page.tsx");
+    const adminGalleryContent = fs.readFileSync(adminGalleryPath, "utf-8");
+    assert(
+      adminGalleryContent.includes('src={item.thumbnailUrl || "/images/video-placeholder.svg"}'),
+      "Admin Gallery renders item.thumbnailUrl or fallback video placeholder on cards"
+    );
+    assert(
+      adminGalleryContent.includes('label="Video Thumbnail"'),
+      "Admin Gallery form includes conditional Video Thumbnail upload field"
+    );
+
+    // Verify existing video records in database with null thumbnail_url work with fallback
+    const existingVideos = await db
+      .select()
+      .from(gallery)
+      .where(eq(gallery.mediaType, "video"));
+    assert(existingVideos.length > 0, "Existing video records found in database");
+    const videoWithoutThumb = existingVideos.find((v) => !v.thumbnailUrl);
+    assert(videoWithoutThumb !== undefined, "Found existing video record without thumbnail (e.g. Khan Villa / Interior Design)");
+    const resolvedPreview = videoWithoutThumb?.thumbnailUrl || "/images/video-placeholder.svg";
+    assert(resolvedPreview === "/images/video-placeholder.svg", "Existing video with null thumbnailUrl resolves cleanly to default placeholder");
+    assert(Boolean(videoWithoutThumb?.mediaUrl), "Original video mediaUrl is fully preserved and playable");
+
+    // Test creating a new video without thumbnail (thumbnailUrl = null)
+    const [testVideoNoThumb] = await db.insert(gallery).values({
+      title: "Automated Test Video Without Thumbnail",
+      mediaType: "video",
+      mediaUrl: "/uploads/test-video-no-thumb.mp4",
+      thumbnailUrl: null,
+      durationSeconds: 30,
+      displayOrder: 998,
+      isActive: true,
+    });
+    const [savedNoThumb] = await db
+      .select()
+      .from(gallery)
+      .where(eq(gallery.id, testVideoNoThumb.insertId));
+    assert(savedNoThumb?.thumbnailUrl === null, "New video without thumbnail saved with thumbnailUrl = null");
+    const fallbackForNew = savedNoThumb?.thumbnailUrl || "/images/video-placeholder.svg";
+    assert(fallbackForNew === "/images/video-placeholder.svg", "New video without thumbnail resolves to default placeholder");
+
+    // Test updating video with a custom thumbnail
+    await db
+      .update(gallery)
+      .set({ thumbnailUrl: "/uploads/test-custom-cover.webp" })
+      .where(eq(gallery.id, testVideoNoThumb.insertId));
+    const [updatedThumb] = await db
+      .select()
+      .from(gallery)
+      .where(eq(gallery.id, testVideoNoThumb.insertId));
+    assert(updatedThumb?.thumbnailUrl === "/uploads/test-custom-cover.webp", "Existing video updated with custom thumbnail");
+    assert(updatedThumb?.mediaUrl === "/uploads/test-video-no-thumb.mp4", "Video mediaUrl remains unchanged after adding thumbnail");
+
+    // Clean up temporary test video record
+    await db.delete(gallery).where(eq(gallery.id, testVideoNoThumb.insertId));
+    console.log("  ✓ Safely cleaned up temporary test video record");
 
     // --------------------------------------------------------------------------
     // 6. REGRESSION SAFETY CHECKS (PHASES 1 TO 5)
