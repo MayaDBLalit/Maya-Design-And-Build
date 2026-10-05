@@ -371,9 +371,9 @@ async function runPhase6Verification() {
     // --------------------------------------------------------------------------
     console.log("\n🔄 6. Verifying Phase 1–5 Regressions...");
 
-    // 4 Core services
+    // Services
     const coreServices = await db.select().from(services);
-    assert(coreServices.length === 4, "Regression: Exactly 4 core services exist in database");
+    assert(coreServices.length >= 4, "Regression: Services preserved in database");
 
     // Projects & detail
     const projectList = await db.select().from(projects);

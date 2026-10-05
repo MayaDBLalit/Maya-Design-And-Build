@@ -69,17 +69,17 @@ async function runPhase3Verification() {
   const [ratesCount] = await db.select({ count: count() }).from(serviceRates);
   const [unitsCount] = await db.select({ count: count() }).from(units);
 
-  assert(Number(svcCount.count) === 4, "Dashboard counts exactly 4 core services");
+  assert(Number(svcCount.count) >= 4, "Dashboard counts at least 4 services");
   assert(Number(teamCount.count) === 5, "Dashboard counts exactly 5 seeded team members");
   assert(Number(ratesCount.count) >= 10, "Dashboard counts 10+ quotation catalog rates");
   assert(Number(unitsCount.count) >= 4, "Dashboard counts 4+ measurement units");
 
   // --------------------------------------------------------------------------
-  // 3. CORE 4 SERVICES VERIFICATION
+  // 3. CORE SERVICES VERIFICATION
   // --------------------------------------------------------------------------
-  console.log("\n🏛️ 3. Verifying 4 Core Services Integrity...");
+  console.log("\n🏛️ 3. Verifying Services Integrity...");
   const coreServices = await db.select().from(services);
-  assert(coreServices.length === 4, "Exactly 4 major services exist in database");
+  assert(coreServices.length >= 4, "Major services exist in database");
 
   const expectedSlugs = [
     "interior-design",

@@ -22,7 +22,7 @@ export function ServicesSection({ initialServices }: ServicesSectionProps) {
   const [selectedService, setSelectedService] = useState<ServiceData | null>(null);
 
   // Filter active and sort by displayOrder
-  const activeServices = initialServices
+  const activeServices = (initialServices || [])
     .filter((s) => s.isActive)
     .sort((a, b) => a.displayOrder - b.displayOrder);
 
@@ -35,81 +35,89 @@ export function ServicesSection({ initialServices }: ServicesSectionProps) {
             <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-[#C5A869]">
               <span>02</span>
               <span className="w-8 h-px bg-[#C5A869]/60" />
-              <span>Core Disciplines</span>
+              <span>Disciplines &amp; Services</span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
-              The Four Architectural Pillars
+              Architectural &amp; Engineering Disciplines
             </h2>
           </div>
           <p className="text-sm text-neutral-400 max-w-md font-light leading-relaxed">
-            Every MAYA project is anchored by these four specialized disciplines, ensuring seamless
+            Every MAYA project is executed with disciplined engineering and precision, ensuring seamless
             transition from conceptual visualization to turnkey structural handover.
           </p>
         </div>
 
-        {/* Services Editorial Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {activeServices.map((service, index) => (
-            <div
-              key={service.id}
-              className="group rounded-2xl bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869]/50 transition-all duration-300 overflow-hidden flex flex-col justify-between"
-            >
-              {/* Image Frame */}
-              <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-neutral-900 border-b border-[#2B313D]">
-                {service.thumbnailUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={service.thumbnailUrl}
-                    alt={service.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-700 ease-out"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#14171C] to-neutral-900 text-neutral-600">
-                    <span className="text-xs uppercase tracking-widest font-mono">
-                      Maya Architectural Pillar
-                    </span>
+        {/* Services Grid or Empty State */}
+        {activeServices.length === 0 ? (
+          <div className="text-center py-16 bg-[#14171C] border border-[#2B313D] rounded-2xl">
+            <p className="text-sm text-neutral-400 font-light">
+              No active services are currently listed. Please check back shortly.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {activeServices.map((service, index) => (
+              <div
+                key={service.id}
+                className="group rounded-2xl bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869]/50 transition-all duration-300 overflow-hidden flex flex-col justify-between"
+              >
+                {/* Image Frame */}
+                <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-neutral-900 border-b border-[#2B313D]">
+                  {service.thumbnailUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={service.thumbnailUrl}
+                      alt={service.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-700 ease-out"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#14171C] to-neutral-900 text-neutral-600">
+                      <span className="text-xs uppercase tracking-widest font-mono">
+                        Maya Architectural Discipline
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Discipline Counter Badge */}
+                  <div className="absolute top-4 left-4 px-3 py-1 rounded bg-black/80 backdrop-blur-xs border border-[#C5A869]/30 text-[#C5A869] font-mono text-xs font-bold tracking-widest">
+                    DISCIPLINE {String(index + 1).padStart(2, "0")}
                   </div>
-                )}
+                </div>
 
-                {/* Pillar Counter Badge */}
-                <div className="absolute top-4 left-4 px-3 py-1 rounded bg-black/80 backdrop-blur-xs border border-[#C5A869]/30 text-[#C5A869] font-mono text-xs font-bold tracking-widest">
-                  PILLAR 0{index + 1}
+                {/* Text & Scope */}
+                <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight group-hover:text-[#C5A869] transition duration-200">
+                      {service.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
+                      {service.shortDescription ||
+                        "Bespoke engineering and architectural execution delivered with absolute precision."}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t border-[#2B313D]/60 flex items-center justify-between">
+                    <button
+                      onClick={() => setSelectedService(service)}
+                      className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] text-[#C5A869] hover:text-[#d4af37] transition cursor-pointer"
+                    >
+                      <span>Explore Methodology</span>
+                      <span className="text-sm">→</span>
+                    </button>
+
+                    <a
+                      href="#quotation"
+                      className="text-[11px] font-mono text-neutral-400 hover:text-white uppercase tracking-wider"
+                    >
+                      Estimate Cost
+                    </a>
+                  </div>
                 </div>
               </div>
-
-              {/* Text & Scope */}
-              <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight group-hover:text-[#C5A869] transition duration-200">
-                    {service.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed">
-                    {service.shortDescription ||
-                      "Bespoke engineering and architectural execution delivered with absolute precision."}
-                  </p>
-                </div>
-
-                <div className="pt-4 border-t border-[#2B313D]/60 flex items-center justify-between">
-                  <button
-                    onClick={() => setSelectedService(service)}
-                    className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] text-[#C5A869] hover:text-[#d4af37] transition cursor-pointer"
-                  >
-                    <span>Explore Methodology</span>
-                    <span className="text-sm">→</span>
-                  </button>
-
-                  <a
-                    href="#quotation"
-                    className="text-[11px] font-mono text-neutral-400 hover:text-white uppercase tracking-wider"
-                  >
-                    Estimate Cost
-                  </a>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Detailed Service Modal */}

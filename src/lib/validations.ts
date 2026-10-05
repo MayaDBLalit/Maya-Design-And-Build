@@ -21,8 +21,33 @@ export type LoginInput = z.infer<typeof loginSchema>;
 // ==============================================================================
 // 2. SERVICES SCHEMAS
 // ==============================================================================
+export const serviceCreateSchema = z.object({
+  title: z.string().min(2, "Title must be at least 2 characters").max(150),
+  slug: z
+    .string()
+    .min(2, "Slug must be at least 2 characters")
+    .max(150)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase alphanumeric with hyphens")
+    .optional()
+    .or(z.literal("")),
+  shortDescription: z.string().max(500).nullable().optional(),
+  detailedContent: z.string().nullable().optional(),
+  thumbnailUrl: z.string().max(500).nullable().optional(),
+  displayOrder: z.number().int().default(0),
+  isActive: z.boolean().default(true),
+});
+
+export type ServiceCreateInput = z.infer<typeof serviceCreateSchema>;
+
 export const serviceUpdateSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters").max(150),
+  slug: z
+    .string()
+    .min(2, "Slug must be at least 2 characters")
+    .max(150)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase alphanumeric with hyphens")
+    .optional()
+    .or(z.literal("")),
   shortDescription: z.string().max(500).nullable().optional(),
   detailedContent: z.string().nullable().optional(),
   thumbnailUrl: z.string().max(500).nullable().optional(),

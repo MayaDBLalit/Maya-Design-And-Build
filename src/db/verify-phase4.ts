@@ -51,7 +51,7 @@ async function runPhase4Verification() {
   assert(Number(adminCount.count) >= 1, "Admin user table intact");
 
   const [svcCount] = await db.select({ count: count() }).from(services);
-  assert(Number(svcCount.count) === 4, "Exactly 4 core services preserved");
+  assert(Number(svcCount.count) >= 4, "Services preserved in database");
 
   const [unitsCount] = await db.select({ count: count() }).from(units);
   assert(Number(unitsCount.count) >= 4, "Measurement units table preserved");
@@ -60,11 +60,11 @@ async function runPhase4Verification() {
   assert(Number(ratesCount.count) >= 10, "Quotation rate catalog preserved (10+ items)");
 
   // --------------------------------------------------------------------------
-  // 2. DYNAMIC SERVICES (4 CORE APPROVED DISCIPLINES)
+  // 2. DYNAMIC SERVICES (CORE APPROVED DISCIPLINES)
   // --------------------------------------------------------------------------
   console.log("\n🏛️ 2. Verifying Dynamic Public Services...");
   const activeServices = await getActiveServices();
-  assert(activeServices.length === 4, "Active services query returns exactly 4 core services");
+  assert(activeServices.length >= 4, "Active services query returns active services");
 
   const slugs = activeServices.map((s) => s.slug);
   assert(slugs.includes("interior-design"), "Includes 'interior-design'");
