@@ -21,15 +21,24 @@ export interface ProjectData {
 
 interface ProjectsSectionProps {
   initialProjects: ProjectData[];
+  isOverview?: boolean;
+  previewLimit?: number;
 }
 
-export function ProjectsSection({ initialProjects }: ProjectsSectionProps) {
+export function ProjectsSection({
+  initialProjects,
+  isOverview = false,
+  previewLimit = 2,
+}: ProjectsSectionProps) {
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
-  const filteredProjects = initialProjects.filter((p) => {
+  const baseProjects = initialProjects.filter((p) => {
     if (activeCategory === "all") return true;
     return p.category === activeCategory;
   });
+
+  const displayedProjects =
+    isOverview && previewLimit ? baseProjects.slice(0, previewLimit) : baseProjects;
 
   return (
     <section id="projects" className="py-24 bg-[#0D0F12] relative border-t border-[#2B313D]/50">
@@ -47,31 +56,33 @@ export function ProjectsSection({ initialProjects }: ProjectsSectionProps) {
             </h2>
           </div>
 
-          {/* Category Filter Tabs */}
-          <div className="flex items-center gap-1.5 p-1 rounded-lg bg-[#14171C] border border-[#2B313D] w-fit">
-            {[
-              { label: "All Projects", key: "all" },
-              { label: "Completed", key: "completed" },
-              { label: "Ongoing", key: "ongoing" },
-              { label: "Upcoming", key: "upcoming" },
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveCategory(tab.key)}
-                className={`px-3.5 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition duration-200 cursor-pointer ${
-                  activeCategory === tab.key
-                    ? "bg-[#C5A869] text-neutral-950 font-bold shadow-xs"
-                    : "text-neutral-400 hover:text-white"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+          {/* Category Filter Tabs (Always active on dedicated page; simplified on overview) */}
+          {!isOverview && (
+            <div className="flex items-center gap-1.5 p-1 rounded-lg bg-[#14171C] border border-[#2B313D] w-fit">
+              {[
+                { label: "All Projects", key: "all" },
+                { label: "Completed", key: "completed" },
+                { label: "Ongoing", key: "ongoing" },
+                { label: "Upcoming", key: "upcoming" },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveCategory(tab.key)}
+                  className={`px-3.5 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition duration-200 cursor-pointer ${
+                    activeCategory === tab.key
+                      ? "bg-[#C5A869] text-neutral-950 font-bold shadow-xs"
+                      : "text-neutral-400 hover:text-white"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Projects Grid */}
-        {filteredProjects.length === 0 ? (
+        {displayedProjects.length === 0 ? (
           <div className="p-16 rounded-2xl bg-[#14171C] border border-[#2B313D] text-center">
             <p className="text-neutral-400 text-sm">
               No projects currently listed in this category.
@@ -79,7 +90,7 @@ export function ProjectsSection({ initialProjects }: ProjectsSectionProps) {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {filteredProjects.map((project) => (
+            {displayedProjects.map((project) => (
               <div
                 key={project.id}
                 className="group rounded-2xl bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869]/50 transition-all duration-300 overflow-hidden flex flex-col justify-between"
@@ -175,6 +186,19 @@ export function ProjectsSection({ initialProjects }: ProjectsSectionProps) {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Overview CTA */}
+        {isOverview && (
+          <div className="mt-12 text-center">
+            <Link
+              href="/projects"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded bg-[#14171C] hover:bg-[#1D2128] border border-[#2B313D] hover:border-[#C5A869]/50 text-white font-bold text-xs uppercase tracking-[0.15em] transition duration-300"
+            >
+              <span>View All Portfolio Projects</span>
+              <span className="text-[#C5A869]">→</span>
+            </Link>
           </div>
         )}
       </div>

@@ -59,7 +59,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               Home
             </Link>
             <span>/</span>
-            <Link href="/#projects" className="hover:text-white transition">
+            <Link href="/projects" className="hover:text-white transition">
               Projects
             </Link>
             <span>/</span>
@@ -196,7 +196,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
                 <div className="pt-6 border-t border-neutral-800">
                   <Link
-                    href="/#quotation"
+                    href="/quotation"
                     className="w-full block text-center py-3 rounded bg-[#C5A869] text-neutral-950 font-bold uppercase tracking-wider hover:bg-[#d4af37] transition shadow-md"
                   >
                     Estimate Similar Project
@@ -248,7 +248,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           {/* Bottom Navigation CTA */}
           <div className="pt-12 border-t border-[#2B313D] flex flex-col sm:flex-row items-center justify-between gap-4">
             <Link
-              href="/#projects"
+              href="/projects"
               className="text-xs font-bold uppercase tracking-[0.15em] text-neutral-400 hover:text-white transition flex items-center gap-2"
             >
               <span>←</span>
@@ -256,7 +256,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             </Link>
 
             <Link
-              href="/#contact"
+              href="/contact"
               className="px-6 py-2.5 rounded bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869] text-xs font-semibold uppercase tracking-wider text-white transition"
             >
               Consult On Your Site

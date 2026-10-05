@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { Modal } from "@/components/admin/Modal";
 
 export interface ServiceData {
@@ -16,15 +17,24 @@ export interface ServiceData {
 
 interface ServicesSectionProps {
   initialServices: ServiceData[];
+  isOverview?: boolean;
+  previewLimit?: number;
 }
 
-export function ServicesSection({ initialServices }: ServicesSectionProps) {
+export function ServicesSection({
+  initialServices,
+  isOverview = false,
+  previewLimit = 4,
+}: ServicesSectionProps) {
   const [selectedService, setSelectedService] = useState<ServiceData | null>(null);
 
   // Filter active and sort by displayOrder
   const activeServices = (initialServices || [])
     .filter((s) => s.isActive)
     .sort((a, b) => a.displayOrder - b.displayOrder);
+
+  const displayedServices =
+    isOverview && previewLimit ? activeServices.slice(0, previewLimit) : activeServices;
 
   return (
     <section id="services" className="py-24 bg-[#0D0F12] relative border-t border-[#2B313D]/50">
@@ -48,7 +58,7 @@ export function ServicesSection({ initialServices }: ServicesSectionProps) {
         </div>
 
         {/* Services Grid or Empty State */}
-        {activeServices.length === 0 ? (
+        {displayedServices.length === 0 ? (
           <div className="text-center py-16 bg-[#14171C] border border-[#2B313D] rounded-2xl">
             <p className="text-sm text-neutral-400 font-light">
               No active services are currently listed. Please check back shortly.
@@ -56,7 +66,7 @@ export function ServicesSection({ initialServices }: ServicesSectionProps) {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {activeServices.map((service, index) => (
+            {displayedServices.map((service, index) => (
               <div
                 key={service.id}
                 className="group rounded-2xl bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869]/50 transition-all duration-300 overflow-hidden flex flex-col justify-between"
@@ -106,16 +116,29 @@ export function ServicesSection({ initialServices }: ServicesSectionProps) {
                       <span className="text-sm">→</span>
                     </button>
 
-                    <a
-                      href="#quotation"
+                    <Link
+                      href="/quotation"
                       className="text-[11px] font-mono text-neutral-400 hover:text-white uppercase tracking-wider"
                     >
                       Estimate Cost
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Overview CTA */}
+        {isOverview && (
+          <div className="mt-12 text-center">
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded bg-[#14171C] hover:bg-[#1D2128] border border-[#2B313D] hover:border-[#C5A869]/50 text-white font-bold text-xs uppercase tracking-[0.15em] transition duration-300"
+            >
+              <span>View All Services &amp; Methodology</span>
+              <span className="text-[#C5A869]">→</span>
+            </Link>
           </div>
         )}
       </div>
@@ -153,13 +176,13 @@ export function ServicesSection({ initialServices }: ServicesSectionProps) {
               <span className="text-xs text-neutral-500 font-mono">
                 MAYA Discipline #{selectedService.displayOrder}
               </span>
-              <a
-                href="#quotation"
+              <Link
+                href="/quotation"
                 onClick={() => setSelectedService(null)}
                 className="px-4 py-2 rounded bg-[#C5A869] text-neutral-950 font-bold text-xs uppercase tracking-wider hover:bg-[#d4af37] transition"
               >
                 Calculate Discipline Rate &rarr;
-              </a>
+              </Link>
             </div>
           </div>
         </Modal>

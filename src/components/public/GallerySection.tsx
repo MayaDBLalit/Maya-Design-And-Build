@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { Modal } from "@/components/admin/Modal";
 
 export interface GalleryData {
@@ -17,13 +18,19 @@ export interface GalleryData {
 
 interface GallerySectionProps {
   initialGallery: GalleryData[];
+  isOverview?: boolean;
+  previewLimit?: number;
 }
 
-export function GallerySection({ initialGallery }: GallerySectionProps) {
+export function GallerySection({
+  initialGallery,
+  isOverview = false,
+  previewLimit = 3,
+}: GallerySectionProps) {
   const [filter, setFilter] = useState<string>("all");
   const [activeItem, setActiveItem] = useState<GalleryData | null>(null);
 
-  const activeItems = initialGallery
+  const activeItems = (initialGallery || [])
     .filter((g) => g.isActive)
     .sort((a, b) => a.displayOrder - b.displayOrder);
 
@@ -31,6 +38,9 @@ export function GallerySection({ initialGallery }: GallerySectionProps) {
     if (filter === "all") return true;
     return item.mediaType === filter;
   });
+
+  const displayedItems =
+    isOverview && previewLimit ? filteredItems.slice(0, previewLimit) : filteredItems;
 
   return (
     <section id="gallery" className="py-24 bg-[#0D0F12] relative border-t border-[#2B313D]/50">
@@ -48,30 +58,32 @@ export function GallerySection({ initialGallery }: GallerySectionProps) {
             </h2>
           </div>
 
-          {/* Filter Tabs */}
-          <div className="flex items-center gap-1.5 p-1 rounded-lg bg-[#14171C] border border-[#2B313D] w-fit">
-            {[
-              { label: "All Works", key: "all" },
-              { label: "Photographs", key: "image" },
-              { label: "Walkthrough Videos", key: "video" },
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setFilter(tab.key)}
-                className={`px-3.5 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition duration-200 cursor-pointer ${
-                  filter === tab.key
-                    ? "bg-[#C5A869] text-neutral-950 font-bold"
-                    : "text-neutral-400 hover:text-white"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+          {/* Filter Tabs (Full tabs on dedicated page) */}
+          {!isOverview && (
+            <div className="flex items-center gap-1.5 p-1 rounded-lg bg-[#14171C] border border-[#2B313D] w-fit">
+              {[
+                { label: "All Works", key: "all" },
+                { label: "Photographs", key: "image" },
+                { label: "Walkthrough Videos", key: "video" },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setFilter(tab.key)}
+                  className={`px-3.5 py-1.5 rounded text-xs font-semibold uppercase tracking-wider transition duration-200 cursor-pointer ${
+                    filter === tab.key
+                      ? "bg-[#C5A869] text-neutral-950 font-bold"
+                      : "text-neutral-400 hover:text-white"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Gallery Grid */}
-        {filteredItems.length === 0 ? (
+        {displayedItems.length === 0 ? (
           <div className="p-16 rounded-2xl bg-[#14171C] border border-[#2B313D] text-center">
             <p className="text-neutral-400 text-sm">
               No gallery items currently listed in this category.
@@ -79,7 +91,7 @@ export function GallerySection({ initialGallery }: GallerySectionProps) {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredItems.map((item) => (
+            {displayedItems.map((item) => (
               <div
                 key={item.id}
                 onClick={() => setActiveItem(item)}
@@ -110,7 +122,6 @@ export function GallerySection({ initialGallery }: GallerySectionProps) {
                   />
                 )}
 
-
                 {/* Overlay Vignette */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent opacity-80 group-hover:opacity-95 transition duration-300 p-5 flex flex-col justify-between">
                   <div className="flex items-center justify-between">
@@ -135,6 +146,19 @@ export function GallerySection({ initialGallery }: GallerySectionProps) {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Overview CTA */}
+        {isOverview && (
+          <div className="mt-12 text-center">
+            <Link
+              href="/gallery"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded bg-[#14171C] hover:bg-[#1D2128] border border-[#2B313D] hover:border-[#C5A869]/50 text-white font-bold text-xs uppercase tracking-[0.15em] transition duration-300"
+            >
+              <span>Explore Full Media Gallery</span>
+              <span className="text-[#C5A869]">→</span>
+            </Link>
           </div>
         )}
       </div>

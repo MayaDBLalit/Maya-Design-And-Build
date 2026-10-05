@@ -89,34 +89,34 @@ export function Footer({ settings }: FooterProps) {
             </h4>
             <ul className="space-y-2 text-xs text-neutral-400 font-medium">
               <li>
-                <a href="/#about" className="hover:text-white transition">
-                  About Maya
-                </a>
+                <Link href="/" className="hover:text-white transition">
+                  Home
+                </Link>
               </li>
               <li>
-                <a href="/#services" className="hover:text-white transition">
-                  Core Services
-                </a>
+                <Link href="/services" className="hover:text-white transition">
+                  Services &amp; Process
+                </Link>
               </li>
               <li>
-                <a href="/#projects" className="hover:text-white transition">
-                  Portfolio Projects
-                </a>
+                <Link href="/projects" className="hover:text-white transition">
+                  Projects &amp; Team
+                </Link>
               </li>
               <li>
-                <a href="/#factors" className="hover:text-white transition">
-                  Five Factors
-                </a>
+                <Link href="/quotation" className="hover:text-white transition">
+                  Quotation Calculator
+                </Link>
               </li>
               <li>
-                <a href="/#process" className="hover:text-white transition">
-                  5-Step Process
-                </a>
+                <Link href="/gallery" className="hover:text-white transition">
+                  Media Gallery
+                </Link>
               </li>
               <li>
-                <a href="/#team" className="hover:text-white transition">
-                  Engineering Team
-                </a>
+                <Link href="/contact" className="hover:text-white transition">
+                  Contact Studio
+                </Link>
               </li>
             </ul>
           </div>
@@ -128,29 +128,29 @@ export function Footer({ settings }: FooterProps) {
             </h4>
             <ul className="space-y-2 text-xs text-neutral-400 font-medium">
               <li>
-                <a href="/#services" className="hover:text-white transition">
+                <Link href="/services" className="hover:text-white transition">
                   Interior Design
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/#services" className="hover:text-white transition">
+                <Link href="/services" className="hover:text-white transition">
                   Architectural Visualization
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/#services" className="hover:text-white transition">
+                <Link href="/services" className="hover:text-white transition">
                   Project Management Services
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/#services" className="hover:text-white transition">
+                <Link href="/services" className="hover:text-white transition">
                   Turnkey Construction
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/#quotation" className="text-[#C5A869] hover:underline font-mono">
+                <Link href="/quotation" className="text-[#C5A869] hover:underline font-mono">
                   Online Estimation Tool
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -176,7 +176,7 @@ export function Footer({ settings }: FooterProps) {
           </div>
         </div>
 
-        {/* Bottom Bar: Copyright & Admin Portal Link */}
+        {/* Bottom Bar: Copyright & Legal Links (No Admin link) */}
         <div className="pt-8 border-t border-[#2B313D]/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-neutral-500">
           <p>
             &copy; 2021 – {currentYear} MAYA Design &amp; Build. All rights reserved.
@@ -196,7 +196,6 @@ export function Footer({ settings }: FooterProps) {
               Privacy Policy
             </Link>
           </div>
-
         </div>
       </div>
     </footer>

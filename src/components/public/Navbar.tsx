@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface NavLink {
   label: string;
@@ -9,20 +10,18 @@ interface NavLink {
 }
 
 const navLinks: NavLink[] = [
-  { label: "About", href: "/#about" },
-  { label: "Services", href: "/#services" },
-  { label: "Projects", href: "/#projects" },
-  { label: "Five Factors", href: "/#factors" },
-  { label: "Process", href: "/#process" },
-  { label: "Team", href: "/#team" },
-  { label: "Gallery", href: "/#gallery" },
-  { label: "Calculator", href: "/#quotation" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Home", href: "/" },
+  { label: "Services", href: "/services" },
+  { label: "Projects", href: "/projects" },
+  { label: "Quotation", href: "/quotation" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -64,26 +63,37 @@ export function Navbar() {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="px-3 py-1.5 rounded-md text-xs uppercase tracking-wider font-medium text-neutral-300 hover:text-white hover:bg-white/5 transition duration-200"
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              const isActive =
+                link.href === "/"
+                  ? pathname === "/"
+                  : pathname?.startsWith(link.href);
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-3 py-1.5 rounded-md text-xs uppercase tracking-wider font-medium transition duration-200 ${
+                    isActive
+                      ? "text-[#C5A869] bg-[#C5A869]/10 font-bold"
+                      : "text-neutral-300 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* CTA Button & Mobile Trigger */}
           <div className="flex items-center gap-3">
-            <a
-              href="/#quotation"
+            <Link
+              href="/quotation"
               className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded bg-gradient-to-r from-[#C5A869] to-[#d4af37] text-neutral-950 text-xs font-bold uppercase tracking-wider hover:brightness-110 shadow-md transition duration-200 active:scale-95"
             >
               <span>Instant Estimate</span>
               <span className="text-sm">→</span>
-            </a>
+            </Link>
 
             {/* Mobile Hamburger Toggle */}
             <button
@@ -132,27 +142,38 @@ export function Navbar() {
               </div>
 
               <nav className="flex flex-col space-y-2">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-3 py-2 text-sm uppercase tracking-wider font-medium text-neutral-300 hover:text-[#C5A869] hover:bg-neutral-800/50 rounded transition"
-                  >
-                    {link.label}
-                  </a>
-                ))}
+                {navLinks.map((link) => {
+                  const isActive =
+                    link.href === "/"
+                      ? pathname === "/"
+                      : pathname?.startsWith(link.href);
+
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`px-3 py-2 text-sm uppercase tracking-wider font-medium rounded transition ${
+                        isActive
+                          ? "text-[#C5A869] bg-[#C5A869]/10 font-bold"
+                          : "text-neutral-300 hover:text-[#C5A869] hover:bg-neutral-800/50"
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
               </nav>
             </div>
 
             <div className="pt-6 border-t border-[#2B313D] space-y-3">
-              <a
-                href="/#quotation"
+              <Link
+                href="/quotation"
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full block text-center py-2.5 rounded bg-[#C5A869] text-neutral-950 text-xs font-bold uppercase tracking-wider hover:bg-[#d4af37] transition"
               >
                 Estimate Quotation
-              </a>
+              </Link>
               <p className="text-[11px] text-center text-neutral-500">
                 Designing Elegance, Building Legacy
               </p>

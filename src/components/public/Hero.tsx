@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 interface HeroProps {
   settings?: Record<string, string>;
@@ -52,40 +53,40 @@ export function Hero({ settings }: HeroProps) {
 
         {/* Call to Actions */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-          <a
-            href="#projects"
+          <Link
+            href="/projects"
             className="w-full sm:w-auto px-8 py-3.5 rounded bg-gradient-to-r from-[#C5A869] to-[#d4af37] text-neutral-950 font-bold text-xs uppercase tracking-[0.15em] hover:brightness-110 shadow-lg hover:shadow-[#C5A869]/20 transition duration-300"
           >
             Explore Projects
-          </a>
+          </Link>
 
-          <a
-            href="#quotation"
+          <Link
+            href="/quotation"
             className="w-full sm:w-auto px-8 py-3.5 rounded bg-[#14171C] hover:bg-[#1D2128] border border-[#2B313D] hover:border-[#C5A869]/50 text-white font-semibold text-xs uppercase tracking-[0.15em] transition duration-300"
           >
             Calculate Instant Estimate
-          </a>
+          </Link>
         </div>
 
         {/* Core Pillars Ribbon */}
         <div className="pt-10 border-t border-[#2B313D]/40 max-w-4xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div className="p-3">
+            <Link href="/services" className="p-3 group rounded-lg hover:bg-white/5 transition">
               <span className="block text-xs font-mono uppercase tracking-widest text-[#C5A869]">01</span>
-              <span className="text-sm font-semibold text-neutral-200">Interior Design</span>
-            </div>
-            <div className="p-3">
+              <span className="text-sm font-semibold text-neutral-200 group-hover:text-[#C5A869] transition">Interior Design</span>
+            </Link>
+            <Link href="/services" className="p-3 group rounded-lg hover:bg-white/5 transition">
               <span className="block text-xs font-mono uppercase tracking-widest text-[#C5A869]">02</span>
-              <span className="text-sm font-semibold text-neutral-200">3D Visualization</span>
-            </div>
-            <div className="p-3">
+              <span className="text-sm font-semibold text-neutral-200 group-hover:text-[#C5A869] transition">3D Visualization</span>
+            </Link>
+            <Link href="/services" className="p-3 group rounded-lg hover:bg-white/5 transition">
               <span className="block text-xs font-mono uppercase tracking-widest text-[#C5A869]">03</span>
-              <span className="text-sm font-semibold text-neutral-200">PMS &amp; Supervision</span>
-            </div>
-            <div className="p-3">
+              <span className="text-sm font-semibold text-neutral-200 group-hover:text-[#C5A869] transition">PMS &amp; Supervision</span>
+            </Link>
+            <Link href="/services" className="p-3 group rounded-lg hover:bg-white/5 transition">
               <span className="block text-xs font-mono uppercase tracking-widest text-[#C5A869]">04</span>
-              <span className="text-sm font-semibold text-neutral-200">Turnkey Construction</span>
-            </div>
+              <span className="text-sm font-semibold text-neutral-200 group-hover:text-[#C5A869] transition">Turnkey Construction</span>
+            </Link>
           </div>
         </div>
       </div>

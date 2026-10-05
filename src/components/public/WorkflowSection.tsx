@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 interface WorkflowStep {
   number: string;
@@ -71,7 +72,11 @@ const steps: WorkflowStep[] = [
   },
 ];
 
-export function WorkflowSection() {
+interface WorkflowSectionProps {
+  isOverview?: boolean;
+}
+
+export function WorkflowSection({ isOverview = false }: WorkflowSectionProps) {
   return (
     <section id="process" className="py-24 bg-[#0D0F12] relative border-t border-[#2B313D]/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -139,6 +144,19 @@ export function WorkflowSection() {
             </div>
           ))}
         </div>
+
+        {/* Overview CTA */}
+        {isOverview && (
+          <div className="mt-12 text-center">
+            <Link
+              href="/services#process"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded bg-[#14171C] hover:bg-[#1D2128] border border-[#2B313D] hover:border-[#C5A869]/50 text-white font-bold text-xs uppercase tracking-[0.15em] transition duration-300"
+            >
+              <span>Explore Complete 5-Step Methodology</span>
+              <span className="text-[#C5A869]">→</span>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );
