@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { formatINR } from "@/lib/formatters";
+import { Spinner } from "@/components/ui/Spinner";
 
 export interface RateItem {
   id: number;
@@ -442,7 +443,10 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                 </span>
                 <div className="text-3xl sm:text-4xl lg:text-5xl font-black font-mono text-white mt-1">
                   {isCalculating ? (
-                    <span className="text-[#C5A869] animate-pulse">Calculating...</span>
+                    <span className="text-[#C5A869] animate-pulse inline-flex items-center gap-2">
+                      <Spinner size="md" />
+                      <span>Calculating...</span>
+                    </span>
                   ) : (
                     formatINR(displayTotal)
                   )}
@@ -652,11 +656,15 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                   <button
                     type="submit"
                     disabled={isSubmittingInquiry}
-                    className="w-full py-4 rounded-xl bg-gradient-to-r from-[#C5A869] to-[#d4af37] text-neutral-950 font-black text-xs uppercase tracking-[0.15em] hover:brightness-110 shadow-lg shadow-[#C5A869]/20 transition duration-300 active:scale-95 disabled:opacity-50 cursor-pointer"
+                    aria-busy={isSubmittingInquiry}
+                    className="w-full py-4 rounded-xl bg-gradient-to-r from-[#C5A869] to-[#d4af37] text-neutral-950 font-black text-xs uppercase tracking-[0.15em] hover:brightness-110 shadow-lg shadow-[#C5A869]/20 transition duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
                   >
-                    {isSubmittingInquiry
-                      ? "Recording Quotation Inquiry..."
-                      : "Confirm & Submit Quotation Inquiry →"}
+                    {isSubmittingInquiry && <Spinner size="sm" />}
+                    <span>
+                      {isSubmittingInquiry
+                        ? "Recording Quotation Inquiry..."
+                        : "Confirm & Submit Quotation Inquiry →"}
+                    </span>
                   </button>
                   <p className="text-[11px] text-neutral-500 text-center mt-2.5">
                     Inquiry and quotation line items will be stored securely in MySQL first.

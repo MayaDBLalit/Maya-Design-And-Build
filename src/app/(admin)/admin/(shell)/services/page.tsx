@@ -12,6 +12,8 @@ import {
   IconCheck,
 } from "@/components/admin/Icons";
 import { generateSlug } from "@/lib/slug";
+import { CardSkeleton } from "@/components/ui/Skeleton";
+import { Spinner } from "@/components/ui/Spinner";
 
 interface ServiceItem {
   id: number;
@@ -50,6 +52,7 @@ export default function AdminServicesPage() {
   // Delete Confirmation State
   const [deleteTarget, setDeleteTarget] = useState<ServiceItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [togglingId, setTogglingId] = useState<number | null>(null);
 
   const fetchServices = async () => {
     setIsLoading(true);
@@ -172,6 +175,8 @@ export default function AdminServicesPage() {
   };
 
   const handleToggleActive = async (service: ServiceItem) => {
+    if (togglingId) return;
+    setTogglingId(service.id);
     try {
       const res = await fetch(`/api/admin/services/${service.id}`, {
         method: "PUT",
@@ -197,6 +202,8 @@ export default function AdminServicesPage() {
       fetchServices();
     } catch (err: any) {
       alert(err.message || "Failed to toggle status");
+    } finally {
+      setTogglingId(null);
     }
   };
 
@@ -270,7 +277,7 @@ export default function AdminServicesPage() {
 
       {/* Services List Grid */}
       {isLoading ? (
-        <div className="text-center py-12 text-sm text-neutral-400">Loading services...</div>
+        <CardSkeleton count={4} />
       ) : services.length === 0 ? (
         <div className="text-center py-16 bg-[#14171C] border border-[#2B313D] rounded-xl">
           <IconServices className="w-12 h-12 text-neutral-600 mx-auto mb-3" />
@@ -315,14 +322,16 @@ export default function AdminServicesPage() {
                     </span>
                     <button
                       onClick={() => handleToggleActive(service)}
+                      disabled={togglingId === service.id}
                       title="Click to toggle active state"
-                      className={`px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider transition cursor-pointer ${
+                      className={`px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wider transition cursor-pointer flex items-center gap-1.5 disabled:opacity-50 ${
                         service.isActive
                           ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30"
                           : "bg-neutral-800 text-neutral-400 border border-neutral-700 hover:bg-neutral-700"
                       }`}
                     >
-                      {service.isActive ? "Active" : "Inactive"}
+                      {togglingId === service.id && <Spinner size="xs" />}
+                      <span>{service.isActive ? "Active" : "Inactive"}</span>
                     </button>
                   </div>
                 </div>
@@ -499,9 +508,11 @@ export default function AdminServicesPage() {
             <button
               type="submit"
               disabled={isSaving}
-              className="px-5 py-2 text-xs font-bold uppercase tracking-wider text-neutral-950 bg-[#C5A869] hover:bg-[#d4af37] disabled:opacity-50 rounded-lg transition cursor-pointer"
+              aria-busy={isSaving}
+              className="inline-flex items-center gap-2 px-5 py-2 text-xs font-bold uppercase tracking-wider text-neutral-950 bg-[#C5A869] hover:bg-[#d4af37] disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition cursor-pointer"
             >
-              {isSaving ? "Saving..." : editingId ? "Save Changes" : "Create Service"}
+              {isSaving && <Spinner size="xs" />}
+              <span>{isSaving ? "Saving..." : editingId ? "Save Changes" : "Create Service"}</span>
             </button>
           </div>
         </form>

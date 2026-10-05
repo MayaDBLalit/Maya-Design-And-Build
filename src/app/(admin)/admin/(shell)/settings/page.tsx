@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { IconSettings, IconCheck, IconAlert } from "@/components/admin/Icons";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { Spinner } from "@/components/ui/Spinner";
 
 interface SettingItem {
   id: number;
@@ -168,7 +170,20 @@ export default function AdminSettingsPage() {
 
       {/* Settings Form */}
       {isLoading ? (
-        <div className="text-center py-12 text-sm text-neutral-400">Loading settings...</div>
+        <div className="rounded-xl border border-[#2B313D] bg-[#14171C] p-6 space-y-6" role="status" aria-label="Loading settings">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-40" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-48" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-36" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        </div>
       ) : (
         <form onSubmit={handleSaveAll} className="space-y-6">
           <div className="rounded-xl border border-[#2B313D] bg-[#14171C] p-6 space-y-5">
@@ -195,7 +210,7 @@ export default function AdminSettingsPage() {
                       value={value}
                       onChange={(e) => handleInputChange(key, e.target.value)}
                       placeholder={`Enter ${meta.label.toLowerCase()}...`}
-                      className="w-full px-3.5 py-2 rounded-lg bg-[#0F1115] border border-[#2B313D] text-sm text-white placeholder-neutral-600 focus:outline-hidden focus:border-[#C5A869]"
+                      className="w-full px-3.5 py-2.5 rounded-lg bg-[#0F1115] border border-[#2B313D] text-sm text-white placeholder-neutral-600 focus:outline-hidden focus:border-[#C5A869]"
                     />
                   )}
                   <p className="text-[11px] font-mono text-neutral-500 mt-1">
@@ -210,9 +225,11 @@ export default function AdminSettingsPage() {
             <button
               type="submit"
               disabled={isSaving}
-              className="px-6 py-3 text-xs font-bold uppercase tracking-wider text-neutral-950 bg-[#C5A869] hover:bg-[#d4af37] rounded-lg transition flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-lg"
+              aria-busy={isSaving}
+              className="px-6 py-3 text-xs font-bold uppercase tracking-wider text-neutral-950 bg-[#C5A869] hover:bg-[#d4af37] rounded-lg transition inline-flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             >
-              {isSaving ? "Saving Settings..." : "Save Website Settings"}
+              {isSaving && <Spinner size="sm" />}
+              <span>{isSaving ? "Saving Settings..." : "Save Website Settings"}</span>
             </button>
           </div>
         </form>

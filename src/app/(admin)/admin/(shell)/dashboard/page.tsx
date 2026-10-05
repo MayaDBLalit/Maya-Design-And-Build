@@ -13,6 +13,7 @@ import {
   IconInquiries,
   IconPlus,
 } from "@/components/admin/Icons";
+import { DashboardSkeleton } from "@/components/ui/Skeleton";
 
 
 interface DashboardStats {
@@ -92,8 +93,12 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
-      {/* Primary Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {isLoading ? (
+        <DashboardSkeleton />
+      ) : (
+        <>
+          {/* Primary Metrics Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Customer Inquiries Card */}
         <div className="rounded-xl border border-[#2B313D] bg-[#14171C] p-5 shadow-sm hover:border-[#C5A869]/50 transition group">
           <div className="flex items-center justify-between">
@@ -329,6 +334,8 @@ export default function AdminDashboardPage() {
           UUID keys. 4 core services are permanently anchored to ensure brand integrity.
         </p>
       </div>
+        </>
+      )}
     </div>
   );
 }

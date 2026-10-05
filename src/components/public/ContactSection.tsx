@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Spinner } from "@/components/ui/Spinner";
 
 interface ContactSectionProps {
   settings: Record<string, string>;
@@ -350,9 +351,11 @@ export function ContactSection({ settings }: ContactSectionProps) {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-4 rounded-xl bg-gradient-to-r from-[#C5A869] to-[#d4af37] text-neutral-950 font-black text-xs uppercase tracking-[0.15em] hover:brightness-110 shadow-lg shadow-[#C5A869]/20 transition duration-300 active:scale-95 disabled:opacity-50"
+                      aria-busy={isSubmitting}
+                      className="w-full py-4 rounded-xl bg-gradient-to-r from-[#C5A869] to-[#d4af37] text-neutral-950 font-black text-xs uppercase tracking-[0.15em] hover:brightness-110 shadow-lg shadow-[#C5A869]/20 transition duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      {isSubmitting ? "Submitting Inquiry..." : "Submit Consultation Request →"}
+                      {isSubmitting && <Spinner size="sm" />}
+                      <span>{isSubmitting ? "Submitting Inquiry..." : "Submit Consultation Request →"}</span>
                     </button>
                     <p className="text-[11px] text-neutral-500 text-center mt-2.5">
                       Database persistence is guaranteed first. You will be able to continue on

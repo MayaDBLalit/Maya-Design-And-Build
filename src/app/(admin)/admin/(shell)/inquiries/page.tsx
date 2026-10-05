@@ -7,6 +7,8 @@ import {
   IconX,
   IconInquiries,
 } from "@/components/admin/Icons";
+import { TableSkeleton, Skeleton } from "@/components/ui/Skeleton";
+import { Spinner } from "@/components/ui/Spinner";
 
 interface InquiryItem {
   id: number;
@@ -315,9 +317,7 @@ export default function AdminInquiriesPage() {
 
       {/* Inquiries Table / Empty state */}
       {isLoading ? (
-        <div className="p-12 text-center text-sm font-mono text-neutral-400">
-          Loading inquiries...
-        </div>
+        <TableSkeleton rows={6} cols={7} />
       ) : inquiriesList.length === 0 ? (
         <div className="p-16 text-center rounded-xl bg-[#14171C] border border-[#2B313D] space-y-3">
           <IconInquiries className="w-10 h-10 text-neutral-600 mx-auto" />
@@ -460,8 +460,18 @@ export default function AdminInquiriesPage() {
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-[#14171C] border border-[#2B313D] rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 space-y-6">
             {isLoadingDetail ? (
-              <div className="py-16 text-center text-sm font-mono text-neutral-400">
-                Loading details for inquiry #{selectedInquiryId}...
+              <div className="space-y-6 py-4" role="status" aria-label="Loading inquiry details">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-2">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-8 w-48" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <Skeleton className="h-20 w-full" />
+                  <Skeleton className="h-20 w-full" />
+                </div>
+                <Skeleton className="h-32 w-full" />
               </div>
             ) : inquiryDetail ? (
               <>
@@ -627,8 +637,9 @@ export default function AdminInquiriesPage() {
                       Inquiry Workflow Status
                     </span>
                     {isUpdatingStatus && (
-                      <span className="text-xs font-mono text-[#C5A869] animate-pulse">
-                        Updating status...
+                      <span className="inline-flex items-center gap-1.5 text-xs font-mono text-[#C5A869]">
+                        <Spinner size="xs" />
+                        <span>Updating status...</span>
                       </span>
                     )}
                   </div>
@@ -642,7 +653,7 @@ export default function AdminInquiriesPage() {
                           type="button"
                           disabled={isUpdatingStatus}
                           onClick={() => handleStatusChange(st)}
-                          className={`py-2 px-3 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition border ${
+                          className={`py-2 px-3 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition border disabled:opacity-50 ${
                             isCurrent
                               ? "bg-[#C5A869] text-neutral-950 border-[#C5A869]"
                               : "bg-[#14171C] text-neutral-400 border-[#2B313D] hover:text-white hover:border-neutral-500"
@@ -678,10 +689,12 @@ export default function AdminInquiriesPage() {
                     <button
                       type="button"
                       disabled={isSavingNotes}
+                      aria-busy={isSavingNotes}
                       onClick={handleSaveNotes}
-                      className="px-4 py-2 rounded-lg bg-[#C5A869] hover:bg-[#d4af37] text-neutral-950 font-bold text-xs uppercase tracking-wider transition"
+                      className="px-4 py-2 rounded-lg bg-[#C5A869] hover:bg-[#d4af37] text-neutral-950 font-bold text-xs uppercase tracking-wider transition inline-flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {isSavingNotes ? "Saving Notes..." : "Save Admin Notes"}
+                      {isSavingNotes && <Spinner size="xs" />}
+                      <span>{isSavingNotes ? "Saving Notes..." : "Save Admin Notes"}</span>
                     </button>
                   </div>
                 </div>
@@ -741,10 +754,12 @@ export default function AdminInquiriesPage() {
               <button
                 type="button"
                 disabled={isDeleting}
+                aria-busy={isDeleting}
                 onClick={confirmDelete}
-                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-mono uppercase tracking-wider font-bold"
+                className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-mono uppercase tracking-wider font-bold inline-flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isDeleting ? "Deleting..." : "Confirm Delete"}
+                {isDeleting && <Spinner size="xs" />}
+                <span>{isDeleting ? "Deleting..." : "Confirm Delete"}</span>
               </button>
             </div>
           </div>

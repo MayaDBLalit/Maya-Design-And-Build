@@ -11,6 +11,8 @@ import {
   IconCheck,
   IconAlert,
 } from "@/components/admin/Icons";
+import { TableSkeleton } from "@/components/ui/Skeleton";
+import { Spinner } from "@/components/ui/Spinner";
 
 interface UnitItem {
   id: number;
@@ -177,7 +179,7 @@ export default function AdminUnitsPage() {
 
       {/* Units Table */}
       {isLoading ? (
-        <div className="text-center py-12 text-sm text-neutral-400">Loading units...</div>
+        <TableSkeleton rows={4} cols={6} />
       ) : units.length === 0 ? (
         <div className="rounded-xl border border-[#2B313D] bg-[#14171C] p-12 text-center">
           <IconUnits className="w-12 h-12 text-neutral-600 mx-auto mb-3" />
@@ -328,9 +330,11 @@ export default function AdminUnitsPage() {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="px-5 py-2 text-xs font-bold uppercase tracking-wider text-neutral-950 bg-[#C5A869] hover:bg-[#d4af37] rounded-lg transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                aria-busy={isSaving}
+                className="px-5 py-2 text-xs font-bold uppercase tracking-wider text-neutral-950 bg-[#C5A869] hover:bg-[#d4af37] rounded-lg transition inline-flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSaving ? "Saving..." : editingId ? "Update Unit" : "Add Unit"}
+                {isSaving && <Spinner size="xs" />}
+                <span>{isSaving ? "Saving..." : editingId ? "Update Unit" : "Add Unit"}</span>
               </button>
             </div>
           </form>

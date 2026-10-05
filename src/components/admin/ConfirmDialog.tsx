@@ -3,6 +3,7 @@
 import React from "react";
 import { Modal } from "./Modal";
 import { IconAlert } from "./Icons";
+import { Spinner } from "@/components/ui/Spinner";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface ConfirmDialogProps {
   message: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  loadingLabel?: string;
   isDestructive?: boolean;
   isLoading?: boolean;
 }
@@ -24,12 +26,16 @@ export function ConfirmDialog({
   message,
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
+  loadingLabel,
   isDestructive = true,
   isLoading = false,
 }: ConfirmDialogProps) {
+  const activeLoadingText =
+    loadingLabel || (isDestructive ? "Deleting..." : "Processing...");
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title} maxWidth="md">
-      <div className="space-y-4">
+    <Modal isOpen={isOpen} onClose={isLoading ? () => {} : onClose} title={title} maxWidth="md">
+      <div className="space-y-4" aria-busy={isLoading}>
         <div className="flex items-start gap-3">
           <div
             className={`p-2.5 rounded-full flex-shrink-0 ${
@@ -48,7 +54,7 @@ export function ConfirmDialog({
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-neutral-300 bg-neutral-800 hover:bg-neutral-700 rounded-lg transition"
+            className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-neutral-300 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 rounded-lg transition cursor-pointer"
           >
             {cancelLabel}
           </button>
@@ -56,19 +62,20 @@ export function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={isLoading}
-            className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-lg transition flex items-center gap-2 ${
+            className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider rounded-lg transition flex items-center gap-2 cursor-pointer disabled:opacity-50 ${
               isDestructive
                 ? "bg-red-600 hover:bg-red-700 text-white"
                 : "bg-[#C5A869] hover:bg-[#d4af37] text-neutral-900"
             }`}
           >
-            {isLoading && (
-              <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-              </svg>
+            {isLoading ? (
+              <>
+                <Spinner size="xs" />
+                <span>{activeLoadingText}</span>
+              </>
+            ) : (
+              confirmLabel
             )}
-            {confirmLabel}
           </button>
         </div>
       </div>

@@ -3,6 +3,7 @@
 import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { IconAlert } from "@/components/admin/Icons";
+import { Spinner } from "@/components/ui/Spinner";
 
 function LoginForm() {
   const router = useRouter();
@@ -100,14 +101,12 @@ function LoginForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full mt-2 py-3 px-4 rounded-lg bg-[#C5A869] hover:bg-[#d4af37] text-neutral-950 font-bold text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+        aria-busy={isLoading}
+        className="w-full mt-2 py-3 px-4 rounded-lg bg-[#C5A869] hover:bg-[#d4af37] text-neutral-950 font-bold text-xs uppercase tracking-widest transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         {isLoading ? (
           <>
-            <svg className="animate-spin h-4 w-4 text-neutral-950" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-            </svg>
+            <Spinner size="xs" />
             <span>Verifying Credentials...</span>
           </>
         ) : (

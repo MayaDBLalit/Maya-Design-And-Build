@@ -15,6 +15,8 @@ import {
   IconUpload,
   IconAlert,
 } from "@/components/admin/Icons";
+import { CardSkeleton, MediaGridSkeleton } from "@/components/ui/Skeleton";
+import { Spinner } from "@/components/ui/Spinner";
 
 interface ProjectItem {
   id: number;
@@ -81,6 +83,7 @@ export default function AdminProjectsPage() {
   const [newMediaUrl, setNewMediaUrl] = useState("");
   const [newMediaType, setNewMediaType] = useState<"image" | "video">("image");
   const [isAttachingMedia, setIsAttachingMedia] = useState(false);
+  const [deletingMediaId, setDeletingMediaId] = useState<number | null>(null);
 
   // Multi-image upload states
   const [isMultiUploading, setIsMultiUploading] = useState(false);
@@ -351,6 +354,7 @@ export default function AdminProjectsPage() {
 
   const handleRemoveMedia = async (mediaId: number) => {
     if (!activeMediaProject) return;
+    setDeletingMediaId(mediaId);
 
     try {
       const res = await fetch(
@@ -362,6 +366,8 @@ export default function AdminProjectsPage() {
       }
     } catch (err) {
       console.error("Failed to delete media item:", err);
+    } finally {
+      setDeletingMediaId(null);
     }
   };
 
@@ -439,7 +445,7 @@ export default function AdminProjectsPage() {
 
       {/* Projects Table / Card Grid */}
       {isLoading ? (
-        <div className="text-center py-12 text-sm text-neutral-400">Loading projects...</div>
+        <CardSkeleton count={6} hasImage={true} />
       ) : filteredProjects.length === 0 ? (
         <div className="rounded-xl border border-[#2B313D] bg-[#14171C] p-12 text-center">
           <IconProjects className="w-12 h-12 text-neutral-600 mx-auto mb-3" />
@@ -780,9 +786,11 @@ export default function AdminProjectsPage() {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="px-5 py-2 text-xs font-bold uppercase tracking-wider text-neutral-950 bg-[#C5A869] hover:bg-[#d4af37] rounded-lg transition flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                aria-busy={isSaving}
+                className="px-5 py-2 text-xs font-bold uppercase tracking-wider text-neutral-950 bg-[#C5A869] hover:bg-[#d4af37] rounded-lg transition inline-flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSaving ? "Saving..." : editingId ? "Update Project" : "Create Project"}
+                {isSaving && <Spinner size="xs" />}
+                <span>{isSaving ? "Saving..." : editingId ? "Update Project" : "Create Project"}</span>
               </button>
             </div>
           </form>
@@ -978,9 +986,11 @@ export default function AdminProjectsPage() {
                     type="button"
                     onClick={handleAttachMedia}
                     disabled={!newMediaUrl || isAttachingMedia}
-                    className="px-4 py-2 text-xs font-bold uppercase tracking-wider bg-[#C5A869] text-neutral-950 rounded-lg hover:bg-[#d4af37] disabled:opacity-50 transition cursor-pointer"
+                    aria-busy={isAttachingMedia}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-wider bg-[#C5A869] text-neutral-950 rounded-lg hover:bg-[#d4af37] disabled:opacity-50 disabled:cursor-not-allowed transition cursor-pointer"
                   >
-                    {isAttachingMedia ? "Attaching..." : "Attach to Project"}
+                    {isAttachingMedia && <Spinner size="xs" />}
+                    <span>{isAttachingMedia ? "Attaching..." : "Attach to Project"}</span>
                   </button>
                 </div>
               </div>
@@ -998,7 +1008,7 @@ export default function AdminProjectsPage() {
               </div>
 
               {isLoadingMedia ? (
-                <div className="text-center py-6 text-xs text-neutral-400">Loading media...</div>
+                <MediaGridSkeleton count={6} />
               ) : projectMediaList.length === 0 ? (
                 <div className="text-xs text-neutral-500 py-8 text-center border border-dashed border-[#2B313D] rounded-xl space-y-1">
                   <p className="font-semibold text-neutral-400">No additional images attached yet</p>
@@ -1035,10 +1045,15 @@ export default function AdminProjectsPage() {
                           <button
                             type="button"
                             onClick={() => handleRemoveMedia(item.id)}
-                            className="p-1.5 rounded bg-red-600 hover:bg-red-700 text-white transition cursor-pointer"
+                            disabled={deletingMediaId === item.id}
+                            className="p-1.5 rounded bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white transition cursor-pointer"
                             title="Delete this image"
                           >
-                            <IconTrash className="w-3.5 h-3.5" />
+                            {deletingMediaId === item.id ? (
+                              <Spinner size="xs" />
+                            ) : (
+                              <IconTrash className="w-3.5 h-3.5" />
+                            )}
                           </button>
                         </div>
 
