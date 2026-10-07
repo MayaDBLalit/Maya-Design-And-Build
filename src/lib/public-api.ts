@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { db } from "@/db";
 import {
   services,
@@ -13,11 +14,11 @@ import { eq, asc, desc, and } from "drizzle-orm";
 import { ALLOWED_SETTING_KEYS } from "./validations";
 
 /**
- * Direct database query helpers for Server Components to ensure zero HTTP roundtrip latency
- * while falling back cleanly when used in client contexts.
+ * Direct database query helpers for Server Components wrapped in React cache()
+ * to guarantee request-level deduplication across metadata and page execution.
  */
 
-export async function getActiveServices() {
+export const getActiveServices = cache(async () => {
   try {
     return await db
       .select()
@@ -28,9 +29,9 @@ export async function getActiveServices() {
     console.error("Failed to query active services:", error);
     return [];
   }
-}
+});
 
-export async function getActiveProjects(category?: string) {
+export const getActiveProjects = cache(async (category?: string) => {
   try {
     const conditions = [];
     if (category && category !== "all") {
@@ -46,9 +47,9 @@ export async function getActiveProjects(category?: string) {
     console.error("Failed to query active projects:", error);
     return [];
   }
-}
+});
 
-export async function getProjectBySlug(slug: string) {
+export const getProjectBySlug = cache(async (slug: string) => {
   try {
     const [project] = await db
       .select()
@@ -75,9 +76,9 @@ export async function getProjectBySlug(slug: string) {
     console.error("Failed to query project by slug:", error);
     return null;
   }
-}
+});
 
-export async function getActiveTeamMembers() {
+export const getActiveTeamMembers = cache(async () => {
   try {
     return await db
       .select()
@@ -88,9 +89,9 @@ export async function getActiveTeamMembers() {
     console.error("Failed to query active team members:", error);
     return [];
   }
-}
+});
 
-export async function getActiveGalleryItems(mediaType?: string) {
+export const getActiveGalleryItems = cache(async (mediaType?: string) => {
   try {
     const conditions = [eq(gallery.isActive, true)];
     if (mediaType && mediaType !== "all") {
@@ -106,9 +107,9 @@ export async function getActiveGalleryItems(mediaType?: string) {
     console.error("Failed to query active gallery items:", error);
     return [];
   }
-}
+});
 
-export async function getActiveQuotationRates() {
+export const getActiveQuotationRates = cache(async () => {
   try {
     return await db
       .select({
@@ -129,9 +130,9 @@ export async function getActiveQuotationRates() {
     console.error("Failed to query active quotation rates:", error);
     return [];
   }
-}
+});
 
-export async function getPublicSettings() {
+export const getPublicSettings = cache(async () => {
   try {
     const allSettings = await db.select().from(settings);
     const map: Record<string, string> = {};
@@ -147,4 +148,4 @@ export async function getPublicSettings() {
     console.error("Failed to query public settings:", error);
     return {};
   }
-}
+});

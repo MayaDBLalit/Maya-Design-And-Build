@@ -12,7 +12,7 @@ interface WorkflowStep {
 const steps: WorkflowStep[] = [
   {
     number: "01",
-    title: "Estimate Preparation",
+    title: "Estimate Prep",
     duration: "Phase 1: Initiation",
     summary:
       "Deep consultation and comprehensive physical site assessment to define functional needs, architectural style, and preliminary commercial boundaries.",
@@ -78,65 +78,65 @@ interface WorkflowSectionProps {
 
 export function WorkflowSection({ isOverview = false }: WorkflowSectionProps) {
   return (
-    <section id="process" className="py-24 bg-[#0D0F12] relative border-t border-[#2B313D]/50">
+    <section id="process" className="py-28 bg-[#FFFFFF] relative border-t border-[#BCC1C4]/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-[#C5A869]">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-[#966015]">
               <span>05</span>
-              <span className="w-8 h-px bg-[#C5A869]/60" />
+              <span className="w-8 h-px bg-[#966015]/60" />
               <span>Execution Roadmap</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#032D47]">
               The 5-Step Engineering Workflow
             </h2>
           </div>
-          <p className="text-sm text-neutral-400 max-w-md font-light leading-relaxed">
+          <p className="text-sm sm:text-base text-[#455668] max-w-md font-normal leading-relaxed">
             Eliminating guesswork through rigorous milestone controls. From initial sketch to key
             handover, every MAYA project advances through five disciplined phases.
           </p>
         </div>
 
         {/* 5-Step Process Timeline Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
           {steps.map((step, index) => (
             <div
               key={step.number}
-              className="p-6 rounded-2xl bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869]/50 transition-all duration-300 flex flex-col justify-between group"
+              className="p-6 rounded-xs bg-[#F9F6F5] border border-[#BCC1C4]/60 hover:border-[#032D47] transition-all duration-300 flex flex-col justify-between group shadow-xs hover:shadow-md"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl font-black font-mono text-[#C5A869] group-hover:scale-110 transition">
+                  <span className="text-2xl font-black font-mono text-[#966015] group-hover:scale-105 transition-transform">
                     {step.number}
                   </span>
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-500">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#455668] font-bold">
                     Step {index + 1} of 5
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-base font-bold text-white tracking-tight leading-snug">
+                  <h3 className="text-lg font-black text-[#032D47] tracking-tight leading-snug">
                     {step.title}
                   </h3>
-                  <p className="text-[11px] font-mono text-[#C5A869]/80 mt-0.5">
+                  <p className="text-[11px] font-mono text-[#966015] font-semibold mt-0.5">
                     {step.duration}
                   </p>
                 </div>
 
-                <p className="text-xs text-neutral-400 leading-relaxed font-light pt-1">
+                <p className="text-xs text-[#455668] leading-relaxed pt-1">
                   {step.summary}
                 </p>
               </div>
 
               {/* Key Deliverables */}
-              <div className="pt-4 border-t border-[#2B313D]/60 mt-4 space-y-1.5">
-                <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-neutral-400 block">
+              <div className="pt-4 border-t border-[#BCC1C4]/40 mt-5 space-y-2">
+                <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-[#032D47] block">
                   Core Deliverables:
                 </span>
                 {step.deliverables.map((d, i) => (
-                  <p key={i} className="text-[11px] text-neutral-300 flex items-start gap-1.5">
-                    <span className="text-[#C5A869] text-xs leading-none">•</span>
+                  <p key={i} className="text-xs text-[#455668] flex items-start gap-1.5 leading-snug">
+                    <span className="text-[#966015] font-bold text-xs leading-none shrink-0 mt-0.5">•</span>
                     <span>{d}</span>
                   </p>
                 ))}
@@ -147,13 +147,13 @@ export function WorkflowSection({ isOverview = false }: WorkflowSectionProps) {
 
         {/* Overview CTA */}
         {isOverview && (
-          <div className="mt-12 text-center">
+          <div className="mt-14 text-center">
             <Link
               href="/services#process"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded bg-[#14171C] hover:bg-[#1D2128] border border-[#2B313D] hover:border-[#C5A869]/50 text-white font-bold text-xs uppercase tracking-[0.15em] transition duration-300"
+              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xs bg-[#032D47] hover:bg-[#966015] text-[#F9F6F5] font-bold text-xs uppercase tracking-[0.18em] transition-all duration-200 shadow-xs"
             >
               <span>Explore Complete 5-Step Methodology</span>
-              <span className="text-[#C5A869]">→</span>
+              <span className="font-serif">→</span>
             </Link>
           </div>
         )}

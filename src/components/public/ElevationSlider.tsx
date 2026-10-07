@@ -41,21 +41,22 @@ export function ElevationSlider({
   };
 
   return (
-    <div className={`space-y-3 ${className}`}>
+    <div className={`space-y-3.5 ${className}`}>
+      {/* Legend Bar */}
       <div className="flex items-center justify-between text-xs font-mono">
-        <span className="text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-neutral-500" />
+        <span className="text-[#455668] uppercase tracking-wider flex items-center gap-1.5 font-semibold">
+          <span className="w-2 h-2 rounded-full bg-[#BCC1C4]" />
           Original Elevation (Before)
         </span>
-        <span className="text-[#C5A869] uppercase tracking-wider flex items-center gap-1.5 font-bold">
+        <span className="text-[#966015] uppercase tracking-wider flex items-center gap-1.5 font-bold">
           Proposed Modern Elevation (After)
-          <span className="w-2 h-2 rounded-full bg-[#C5A869]" />
+          <span className="w-2 h-2 rounded-full bg-[#966015]" />
         </span>
       </div>
 
       <div
         ref={containerRef}
-        className="relative h-80 sm:h-96 md:h-[450px] w-full rounded-2xl overflow-hidden border border-[#2B313D] select-none cursor-ew-resize bg-neutral-900"
+        className="relative h-80 sm:h-96 md:h-[460px] w-full rounded-xs overflow-hidden border border-[#BCC1C4]/80 select-none cursor-ew-resize bg-[#F2EFEB] shadow-sm"
         onMouseDown={() => setIsDragging(true)}
         onMouseUp={() => setIsDragging(false)}
         onMouseLeave={() => setIsDragging(false)}
@@ -72,7 +73,7 @@ export function ElevationSlider({
           className="absolute inset-0 w-full h-full object-cover"
           draggable={false}
         />
-        <div className="absolute top-4 right-4 px-3 py-1 rounded bg-black/80 backdrop-blur-xs border border-[#C5A869]/40 text-[#C5A869] text-xs font-mono font-bold tracking-wider pointer-events-none">
+        <div className="absolute top-4 right-4 px-3 py-1 rounded-xs bg-[#FFFFFF]/90 backdrop-blur-xs border border-[#BCC1C4]/60 text-[#966015] text-xs font-mono font-bold tracking-wider pointer-events-none shadow-xs">
           AFTER
         </div>
 
@@ -91,26 +92,26 @@ export function ElevationSlider({
             }}
             draggable={false}
           />
-          <div className="absolute top-4 left-4 px-3 py-1 rounded bg-black/80 backdrop-blur-xs border border-neutral-700 text-neutral-300 text-xs font-mono font-bold tracking-wider pointer-events-none">
+          <div className="absolute top-4 left-4 px-3 py-1 rounded-xs bg-[#FFFFFF]/90 backdrop-blur-xs border border-[#BCC1C4]/60 text-[#455668] text-xs font-mono font-bold tracking-wider pointer-events-none shadow-xs">
             BEFORE
           </div>
         </div>
 
         {/* Divider Slider Bar */}
         <div
-          className="absolute top-0 bottom-0 w-1 bg-[#C5A869] shadow-[0_0_10px_rgba(197,168,105,0.8)] cursor-ew-resize flex items-center justify-center -translate-x-1/2"
+          className="absolute top-0 bottom-0 w-1 bg-[#032D47] cursor-ew-resize flex items-center justify-center -translate-x-1/2 shadow-md"
           style={{ left: `${sliderPosition}%` }}
         >
-          <div className="w-8 h-8 rounded-full bg-[#14171C] border-2 border-[#C5A869] flex items-center justify-center text-white shadow-xl">
-            <svg className="w-4 h-4 text-[#C5A869]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" transform="rotate(90 12 12)" />
+          <div className="w-8 h-8 rounded-full bg-[#FFFFFF] border-2 border-[#032D47] flex items-center justify-center text-[#032D47] shadow-lg">
+            <svg className="w-4 h-4 text-[#032D47]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M8 9l4-4 4 4m0 6l-4 4-4-4" transform="rotate(90 12 12)" />
             </svg>
           </div>
         </div>
       </div>
 
-      <p className="text-[11px] text-center text-neutral-500 font-mono">
-        Drag slider left/right or tap to compare architectural transformation
+      <p className="text-[11px] text-center text-[#455668] font-mono">
+        Drag slider left or right to compare architectural metamorphosis
       </p>
     </div>
   );

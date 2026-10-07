@@ -25,38 +25,49 @@ export function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 40) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 20);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-[#0D0F12]/92 backdrop-blur-md border-b border-[#2B313D]/70 py-3 shadow-xl"
-            : "bg-gradient-to-b from-[#0D0F12]/90 via-[#0D0F12]/50 to-transparent py-5"
+            ? "bg-[#F9F6F5]/95 backdrop-blur-md border-b border-[#BCC1C4]/50 py-3.5 shadow-[0_4px_24px_rgba(3,45,71,0.04)]"
+            : "bg-[#F9F6F5]/80 backdrop-blur-xs border-b border-[#BCC1C4]/20 py-5"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-          {/* Maya Brand Logo */}
-          <Link href="/" className="group flex items-center gap-3">
-            <div className="w-10 h-10 rounded-sm bg-[#14171C] border border-[#C5A869]/50 flex items-center justify-center group-hover:border-[#C5A869] transition duration-300 shadow-sm">
-              <span className="text-xl font-black tracking-widest text-[#C5A869]">M</span>
+          {/* Architectural Brand Identity */}
+          <Link
+            href="/"
+            className="group flex items-center gap-3.5 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#966015] rounded-xs"
+          >
+            <div className="w-10 h-10 rounded-xs bg-[#032D47] text-[#F9F6F5] flex items-center justify-center font-serif text-xl font-bold tracking-wider group-hover:bg-[#966015] transition-colors duration-300 shadow-xs">
+              M
             </div>
             <div className="flex flex-col">
-              <span className="text-lg font-black tracking-[0.2em] text-white group-hover:text-[#C5A869] transition duration-300">
+              <span className="text-lg font-black tracking-[0.22em] text-[#032D47] group-hover:text-[#966015] transition-colors duration-300">
                 MAYA
               </span>
-              <span className="text-[9px] uppercase tracking-[0.25em] text-neutral-400 font-medium">
-                Design & Build
+              <span className="text-[9px] uppercase tracking-[0.28em] text-[#455668] font-semibold">
+                Design &amp; Build
               </span>
             </div>
           </Link>
@@ -73,32 +84,35 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-3 py-1.5 rounded-md text-xs uppercase tracking-wider font-medium transition duration-200 ${
+                  className={`relative px-4 py-2 text-xs uppercase tracking-[0.16em] font-semibold transition-all duration-200 rounded-xs focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#966015] ${
                     isActive
-                      ? "text-[#C5A869] bg-[#C5A869]/10 font-bold"
-                      : "text-neutral-300 hover:text-white hover:bg-white/5"
+                      ? "text-[#966015] font-bold"
+                      : "text-[#455668] hover:text-[#032D47] hover:bg-[#032D47]/5"
                   }`}
                 >
                   {link.label}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-[#966015] rounded-full" />
+                  )}
                 </Link>
               );
             })}
           </nav>
 
-          {/* CTA Button & Mobile Trigger */}
+          {/* Desktop Primary Action & Mobile Toggle */}
           <div className="flex items-center gap-3">
             <Link
               href="/quotation"
-              className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded bg-gradient-to-r from-[#C5A869] to-[#d4af37] text-neutral-950 text-xs font-bold uppercase tracking-wider hover:brightness-110 shadow-md transition duration-200 active:scale-95"
+              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xs bg-[#032D47] hover:bg-[#966015] text-[#F9F6F5] text-xs font-bold uppercase tracking-[0.16em] transition-all duration-200 shadow-xs active:scale-98 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#966015]"
             >
               <span>Instant Estimate</span>
-              <span className="text-sm">→</span>
+              <span className="text-sm font-serif">→</span>
             </Link>
 
-            {/* Mobile Hamburger Toggle */}
+            {/* Mobile Menu Toggle Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-md text-neutral-300 hover:text-white hover:bg-neutral-800 transition focus:outline-hidden"
+              className="lg:hidden p-2 rounded-xs text-[#032D47] hover:bg-[#032D47]/5 transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#966015]"
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
             >
@@ -114,26 +128,35 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Mobile Drawer */}
+      {/* Accessible Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 flex">
+        <div className="lg:hidden fixed inset-0 z-50 flex" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
           <div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 bg-[#032D47]/40 backdrop-blur-xs transition-opacity duration-300"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="relative ml-auto w-72 max-w-[80vw] h-full bg-[#14171C] border-l border-[#2B313D] p-6 flex flex-col justify-between overflow-y-auto">
+
+          <div className="relative ml-auto w-80 max-w-[85vw] h-full bg-[#F9F6F5] border-l border-[#BCC1C4]/60 p-6 flex flex-col justify-between overflow-y-auto shadow-2xl animate-slide-in">
             <div className="space-y-6">
-              <div className="flex items-center justify-between pb-4 border-b border-[#2B313D]">
-                <div className="flex flex-col">
-                  <span className="text-xl font-bold tracking-widest text-[#C5A869]">MAYA</span>
-                  <span className="text-[10px] uppercase tracking-widest text-neutral-400">
-                    Design & Build
-                  </span>
+              <div className="flex items-center justify-between pb-4 border-b border-[#BCC1C4]/40">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xs bg-[#032D47] text-[#F9F6F5] flex items-center justify-center font-serif text-lg font-bold">
+                    M
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-base font-black tracking-widest text-[#032D47]">
+                      MAYA
+                    </span>
+                    <span className="text-[8px] uppercase tracking-widest text-[#455668] font-semibold">
+                      Design &amp; Build
+                    </span>
+                  </div>
                 </div>
+
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-1 text-neutral-400 hover:text-white"
-                  aria-label="Close menu"
+                  className="p-1.5 rounded-xs text-[#455668] hover:text-[#032D47] hover:bg-[#032D47]/5 transition"
+                  aria-label="Close navigation menu"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -141,7 +164,8 @@ export function Navbar() {
                 </button>
               </div>
 
-              <nav className="flex flex-col space-y-2">
+              {/* Mobile Nav Links */}
+              <nav className="flex flex-col space-y-1.5">
                 {navLinks.map((link) => {
                   const isActive =
                     link.href === "/"
@@ -153,10 +177,10 @@ export function Navbar() {
                       key={link.href}
                       href={link.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`px-3 py-2 text-sm uppercase tracking-wider font-medium rounded transition ${
+                      className={`px-4 py-3 text-sm uppercase tracking-[0.16em] font-semibold rounded-xs transition-all ${
                         isActive
-                          ? "text-[#C5A869] bg-[#C5A869]/10 font-bold"
-                          : "text-neutral-300 hover:text-[#C5A869] hover:bg-neutral-800/50"
+                          ? "bg-[#966015]/10 text-[#966015] font-bold border-l-2 border-[#966015]"
+                          : "text-[#032D47] hover:bg-[#032D47]/5"
                       }`}
                     >
                       {link.label}
@@ -166,16 +190,17 @@ export function Navbar() {
               </nav>
             </div>
 
-            <div className="pt-6 border-t border-[#2B313D] space-y-3">
+            {/* Mobile Footer Drawer Actions */}
+            <div className="pt-6 border-t border-[#BCC1C4]/40 space-y-3">
               <Link
                 href="/quotation"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full block text-center py-2.5 rounded bg-[#C5A869] text-neutral-950 text-xs font-bold uppercase tracking-wider hover:bg-[#d4af37] transition"
+                className="w-full block text-center py-3.5 rounded-xs bg-[#966015] hover:bg-[#032D47] text-[#FFFFFF] text-xs font-bold uppercase tracking-[0.16em] transition-all shadow-xs"
               >
-                Estimate Quotation
+                Estimate Project Cost
               </Link>
-              <p className="text-[11px] text-center text-neutral-500">
-                Designing Elegance, Building Legacy
+              <p className="text-[10px] text-center uppercase tracking-widest text-[#455668] font-mono">
+                Established 2021 • Bardoli
               </p>
             </div>
           </div>

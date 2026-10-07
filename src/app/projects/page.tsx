@@ -23,26 +23,25 @@ export default async function ProjectsPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-[#0D0F12] text-[#F4F4F6] selection:bg-[#C5A869] selection:text-neutral-950 font-sans">
+    <div className="min-h-screen bg-[#F9F6F5] text-[#032D47] font-sans selection:bg-[#E1A857] selection:text-[#032D47]">
       {/* 1. Header & Navigation */}
       <Navbar />
 
       <main className="pt-24">
         {/* 2. Page Hero Banner */}
-        <section className="py-16 sm:py-20 bg-gradient-to-b from-[#14171C]/80 to-[#0D0F12] border-b border-[#2B313D]/60 relative overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-[#C5A869]/10 rounded-full blur-[140px] pointer-events-none" />
+        <section className="py-20 bg-[#FFFFFF] border-b border-[#BCC1C4]/40 relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-[#C5A869]">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-[#966015]">
               <span>Portfolio &amp; Leadership</span>
-              <span className="w-8 h-px bg-[#C5A869]/60" />
+              <span className="w-8 h-px bg-[#966015]/60" />
               <span>Works &amp; Team</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#032D47]">
               Projects &amp; Engineering Team
             </h1>
-            <p className="text-sm sm:text-base text-neutral-300 max-w-2xl font-light leading-relaxed">
+            <p className="text-sm sm:text-base text-[#455668] max-w-2xl font-normal leading-relaxed">
               Explore our executed architectural milestones and discover the engineering leadership
-              spearheading structural integrity and project delivery.
+              spearheading structural integrity and project delivery in Bardoli.
             </p>
           </div>
         </section>
@@ -54,25 +53,25 @@ export default async function ProjectsPage() {
         <TeamSection initialTeam={team} />
 
         {/* 5. Consultation & Inquiries CTA Banner */}
-        <section className="py-20 bg-[#14171C] border-t border-[#2B313D] text-center relative overflow-hidden">
+        <section className="py-24 bg-[#FFFFFF] border-t border-[#BCC1C4]/40 text-center relative overflow-hidden">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 relative z-10">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-[#032D47] tracking-tight">
               Envisioning Your Next Property Transformation?
             </h2>
-            <p className="text-sm text-neutral-400 max-w-xl mx-auto font-light leading-relaxed">
+            <p className="text-sm sm:text-base text-[#455668] max-w-xl mx-auto leading-relaxed">
               Our engineering team is ready to analyze your site plans, draft photorealistic 3D concepts,
               and manage construction down to the smallest detail.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-3">
               <Link
                 href="/quotation"
-                className="w-full sm:w-auto px-8 py-3.5 rounded bg-gradient-to-r from-[#C5A869] to-[#d4af37] text-neutral-950 font-bold text-xs uppercase tracking-[0.15em] hover:brightness-110 shadow-lg transition duration-300"
+                className="w-full sm:w-auto px-8 py-4 rounded-xs bg-[#032D47] hover:bg-[#966015] text-[#F9F6F5] font-bold text-xs uppercase tracking-[0.16em] transition-all duration-200 shadow-sm"
               >
                 Instant Quotation Calculator &rarr;
               </Link>
               <Link
                 href="/contact"
-                className="w-full sm:w-auto px-8 py-3.5 rounded bg-[#0D0F12] hover:bg-[#1D2128] border border-[#2B313D] hover:border-[#C5A869]/50 text-white font-semibold text-xs uppercase tracking-[0.15em] transition duration-300"
+                className="w-full sm:w-auto px-8 py-4 rounded-xs bg-[#FFFFFF] hover:bg-[#F2EFEB] border border-[#BCC1C4]/80 hover:border-[#032D47] text-[#032D47] font-bold text-xs uppercase tracking-[0.16em] transition-all duration-200 shadow-xs"
               >
                 Consult With Our Engineers &rarr;
               </Link>

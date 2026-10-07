@@ -11,16 +11,10 @@ interface FloatingCallButtonProps {
    * If omitted, the component falls back to fetching /api/settings client-side.
    */
   phone?: string | null;
-  /**
-   * Optional custom CSS class name.
-   */
   className?: string;
 }
 
-/**
- * Universal inline phone SVG icon (Feather / Lucide style)
- */
-function PhoneIcon({ className = "w-6 h-6" }: { className?: string }) {
+function PhoneIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
     <svg
       className={className}
@@ -37,25 +31,15 @@ function PhoneIcon({ className = "w-6 h-6" }: { className?: string }) {
   );
 }
 
-/**
- * FloatingCallButton
- *
- * Fixed, accessible floating call action button for the public website.
- * Retrieves the phone number dynamically from Maya CMS settings, safely
- * normalizes international dial codes for tel: URIs, and hides gracefully
- * if no valid phone number is configured.
- */
 export function FloatingCallButton({ phone: propPhone, className = "" }: FloatingCallButtonProps) {
   const [activePhone, setActivePhone] = useState<string | null>(propPhone || null);
 
-  // Synchronize when prop changes (e.g. fast page navigation or SSR updates)
   useEffect(() => {
     if (propPhone !== undefined) {
       setActivePhone(propPhone);
     }
   }, [propPhone]);
 
-  // Client-side fallback if phone was not provided via SSR props
   useEffect(() => {
     if (propPhone !== undefined) return;
 
@@ -81,10 +65,8 @@ export function FloatingCallButton({ phone: propPhone, className = "" }: Floatin
     };
   }, [propPhone]);
 
-  // Normalize telephone destination safely
   const telTarget = normalizeTelHref(activePhone);
 
-  // If phone is missing, invalid, or unconfigured, do not render a broken tel: link
   if (!telTarget || !activePhone) {
     return null;
   }
@@ -101,12 +83,12 @@ export function FloatingCallButton({ phone: propPhone, className = "" }: Floatin
         aria-label={`Call Maya Design & Build at ${displayPhone}`}
         title={`Call Maya Design & Build: ${displayPhone}`}
         style={{
-          bottom: "calc(1.25rem + env(safe-area-inset-bottom, 0px))",
-          right: "calc(1.25rem + env(safe-area-inset-right, 0px))",
+          bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))",
+          right: "calc(1.5rem + env(safe-area-inset-right, 0px))",
         }}
-        className={`pointer-events-auto fixed z-40 w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-gradient-to-tr from-[#C5A869] to-[#d4af37] text-neutral-950 shadow-xl shadow-black/50 hover:shadow-[#C5A869]/40 hover:scale-105 active:scale-95 transition-all duration-200 border border-[#C5A869]/60 flex items-center justify-center cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#C5A869] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D0F12] ${className}`}
+        className={`pointer-events-auto fixed z-40 w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#032D47] hover:bg-[#966015] text-[#F9F6F5] shadow-[0_8px_25px_rgba(3,45,71,0.25)] hover:scale-105 active:scale-95 transition-all duration-200 border-2 border-[#FFFFFF] flex items-center justify-center cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#966015] focus-visible:ring-offset-2 ${className}`}
       >
-        <PhoneIcon className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-950 flex-shrink-0" />
+        <PhoneIcon className="w-5 h-5 sm:w-6 sm:h-6 text-[#F9F6F5] shrink-0" />
         <span className="sr-only">Call Maya Design & Build at {displayPhone}</span>
       </a>
     </aside>

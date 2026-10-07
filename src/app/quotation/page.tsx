@@ -20,24 +20,23 @@ export default async function QuotationPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-[#0D0F12] text-[#F4F4F6] selection:bg-[#C5A869] selection:text-neutral-950 font-sans">
+    <div className="min-h-screen bg-[#F9F6F5] text-[#032D47] font-sans selection:bg-[#E1A857] selection:text-[#032D47]">
       {/* 1. Header & Navigation */}
       <Navbar />
 
       <main className="pt-24">
         {/* 2. Page Hero Banner */}
-        <section className="py-16 sm:py-20 bg-gradient-to-b from-[#14171C]/80 to-[#0D0F12] border-b border-[#2B313D]/60 relative overflow-hidden">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-[#C5A869]/10 rounded-full blur-[140px] pointer-events-none" />
+        <section className="py-20 bg-[#FFFFFF] border-b border-[#BCC1C4]/40 relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-[#C5A869]">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-[#966015]">
               <span>Transparent Estimation</span>
-              <span className="w-8 h-px bg-[#C5A869]/60" />
+              <span className="w-8 h-px bg-[#966015]/60" />
               <span>Authoritative BOQ Calculator</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#032D47]">
               Dynamic Quotation Calculator
             </h1>
-            <p className="text-sm sm:text-base text-neutral-300 max-w-2xl font-light leading-relaxed">
+            <p className="text-sm sm:text-base text-[#455668] max-w-2xl font-normal leading-relaxed">
               Scientific rate calculation itemized by discipline. Customize your square footage,
               select specific structural deliverables, and calculate estimated investments verified by our server engine.
             </p>

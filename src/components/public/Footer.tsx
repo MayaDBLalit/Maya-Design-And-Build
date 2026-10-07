@@ -18,33 +18,33 @@ export function Footer({ settings }: FooterProps) {
   const youtubeUrl = settings.youtube_url;
 
   return (
-    <footer className="bg-[#0B0D10] text-[#F4F4F6] border-t border-[#2B313D] pt-16 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <footer className="bg-[#F2EFEB] text-[#032D47] border-t border-[#BCC1C4]/60 pt-20 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 items-start">
           {/* Brand Column */}
           <div className="lg:col-span-2 space-y-4">
             <Link href="/" className="inline-block group">
-              <span className="text-2xl font-black tracking-[0.2em] text-[#C5A869]">
+              <span className="text-2xl font-black tracking-[0.2em] text-[#032D47] group-hover:text-[#966015] transition-colors">
                 MAYA
               </span>
-              <span className="text-xs uppercase tracking-[0.25em] text-neutral-400 block font-medium">
+              <span className="text-xs uppercase tracking-[0.25em] text-[#455668] block font-semibold">
                 Design &amp; Build
               </span>
             </Link>
 
-            <p className="text-xs text-neutral-400 max-w-sm leading-relaxed font-light">
-              Designing Elegance, Building Legacy. Providing turnkey engineering, interior
-              architecture, 3D visualization, and project management controls in Bardoli since 2021.
+            <p className="text-xs sm:text-sm text-[#455668] max-w-sm leading-relaxed">
+              Designing Elegance, Building Legacy. Providing turnkey civil engineering, interior
+              architecture, photorealistic 3D visualization, and project management controls in Bardoli since 2021.
             </p>
 
-            {/* Social Media Links (if configured) */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            {/* Social Media Links */}
+            <div className="flex flex-wrap items-center gap-2 pt-2">
               {instagramUrl && (
                 <a
                   href={instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869] text-xs font-mono text-neutral-300 hover:text-white transition"
+                  className="px-3 py-1.5 rounded-xs bg-[#FFFFFF] border border-[#BCC1C4]/80 hover:border-[#032D47] text-xs font-mono text-[#032D47] hover:bg-[#032D47] hover:text-[#FFFFFF] transition-all shadow-xs"
                 >
                   Instagram
                 </a>
@@ -54,7 +54,7 @@ export function Footer({ settings }: FooterProps) {
                   href={facebookUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869] text-xs font-mono text-neutral-300 hover:text-white transition"
+                  className="px-3 py-1.5 rounded-xs bg-[#FFFFFF] border border-[#BCC1C4]/80 hover:border-[#032D47] text-xs font-mono text-[#032D47] hover:bg-[#032D47] hover:text-[#FFFFFF] transition-all shadow-xs"
                 >
                   Facebook
                 </a>
@@ -64,7 +64,7 @@ export function Footer({ settings }: FooterProps) {
                   href={linkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869] text-xs font-mono text-neutral-300 hover:text-white transition"
+                  className="px-3 py-1.5 rounded-xs bg-[#FFFFFF] border border-[#BCC1C4]/80 hover:border-[#032D47] text-xs font-mono text-[#032D47] hover:bg-[#032D47] hover:text-[#FFFFFF] transition-all shadow-xs"
                 >
                   LinkedIn
                 </a>
@@ -74,7 +74,7 @@ export function Footer({ settings }: FooterProps) {
                   href={youtubeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1.5 rounded bg-[#14171C] border border-[#2B313D] hover:border-[#C5A869] text-xs font-mono text-neutral-300 hover:text-white transition"
+                  className="px-3 py-1.5 rounded-xs bg-[#FFFFFF] border border-[#BCC1C4]/80 hover:border-[#032D47] text-xs font-mono text-[#032D47] hover:bg-[#032D47] hover:text-[#FFFFFF] transition-all shadow-xs"
                 >
                   YouTube
                 </a>
@@ -83,38 +83,38 @@ export function Footer({ settings }: FooterProps) {
           </div>
 
           {/* Quick Navigation */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold font-mono uppercase tracking-widest text-[#C5A869]">
+          <div className="space-y-3.5">
+            <h4 className="text-xs font-bold font-mono uppercase tracking-widest text-[#966015]">
               Navigation
             </h4>
-            <ul className="space-y-2 text-xs text-neutral-400 font-medium">
+            <ul className="space-y-2.5 text-xs text-[#455668] font-semibold uppercase tracking-wider">
               <li>
-                <Link href="/" className="hover:text-white transition">
+                <Link href="/" className="hover:text-[#032D47] transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-white transition">
+                <Link href="/services" className="hover:text-[#032D47] transition-colors">
                   Services &amp; Process
                 </Link>
               </li>
               <li>
-                <Link href="/projects" className="hover:text-white transition">
+                <Link href="/projects" className="hover:text-[#032D47] transition-colors">
                   Projects &amp; Team
                 </Link>
               </li>
               <li>
-                <Link href="/quotation" className="hover:text-white transition">
+                <Link href="/quotation" className="hover:text-[#032D47] transition-colors">
                   Quotation Calculator
                 </Link>
               </li>
               <li>
-                <Link href="/gallery" className="hover:text-white transition">
+                <Link href="/gallery" className="hover:text-[#032D47] transition-colors">
                   Media Gallery
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-white transition">
+                <Link href="/contact" className="hover:text-[#032D47] transition-colors">
                   Contact Studio
                 </Link>
               </li>
@@ -122,62 +122,62 @@ export function Footer({ settings }: FooterProps) {
           </div>
 
           {/* Core Services */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold font-mono uppercase tracking-widest text-[#C5A869]">
+          <div className="space-y-3.5">
+            <h4 className="text-xs font-bold font-mono uppercase tracking-widest text-[#966015]">
               Core Disciplines
             </h4>
-            <ul className="space-y-2 text-xs text-neutral-400 font-medium">
+            <ul className="space-y-2.5 text-xs text-[#455668] font-medium">
               <li>
-                <Link href="/services" className="hover:text-white transition">
+                <Link href="/services" className="hover:text-[#032D47] transition-colors">
                   Interior Design
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-white transition">
+                <Link href="/services" className="hover:text-[#032D47] transition-colors">
                   Architectural Visualization
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-white transition">
+                <Link href="/services" className="hover:text-[#032D47] transition-colors">
                   Project Management Services
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-white transition">
+                <Link href="/services" className="hover:text-[#032D47] transition-colors">
                   Turnkey Construction
                 </Link>
               </li>
               <li>
-                <Link href="/quotation" className="text-[#C5A869] hover:underline font-mono">
-                  Online Estimation Tool
+                <Link href="/quotation" className="text-[#966015] hover:text-[#032D47] font-mono font-bold transition-colors">
+                  Online Estimation Tool &rarr;
                 </Link>
               </li>
             </ul>
           </div>
 
           {/* Contact Details */}
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold font-mono uppercase tracking-widest text-[#C5A869]">
+          <div className="space-y-3.5">
+            <h4 className="text-xs font-bold font-mono uppercase tracking-widest text-[#966015]">
               Studio
             </h4>
-            <p className="text-xs text-neutral-400 leading-relaxed font-light">
+            <p className="text-xs text-[#455668] leading-relaxed">
               {address}
             </p>
-            <p className="text-xs font-mono text-neutral-300">
-              <a href={`tel:${phone}`} className="hover:text-[#C5A869] transition">
+            <p className="text-xs font-mono text-[#032D47] font-bold">
+              <a href={`tel:${phone}`} className="hover:text-[#966015] transition-colors">
                 {phone}
               </a>
             </p>
-            <p className="text-xs font-mono text-neutral-300">
-              <a href={`mailto:${email}`} className="hover:text-[#C5A869] transition">
+            <p className="text-xs font-mono text-[#032D47]">
+              <a href={`mailto:${email}`} className="hover:text-[#966015] transition-colors">
                 {email}
               </a>
             </p>
           </div>
         </div>
 
-        {/* Bottom Bar: Copyright & Legal Links (No Admin link) */}
-        <div className="pt-8 border-t border-[#2B313D]/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-neutral-500">
+        {/* Bottom Bar: Copyright & Legal Links (No public Admin link) */}
+        <div className="pt-8 border-t border-[#BCC1C4]/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-[#455668]">
           <p>
             &copy; 2021 – {currentYear} MAYA Design &amp; Build. All rights reserved.
           </p>
@@ -185,13 +185,13 @@ export function Footer({ settings }: FooterProps) {
           <div className="flex items-center gap-6">
             <Link
               href="/terms"
-              className="text-neutral-500 hover:text-white transition uppercase tracking-widest text-[11px]"
+              className="text-[#455668] hover:text-[#032D47] transition-colors uppercase tracking-widest text-[11px]"
             >
               Terms &amp; Conditions
             </Link>
             <Link
               href="/privacy"
-              className="text-neutral-500 hover:text-white transition uppercase tracking-widest text-[11px]"
+              className="text-[#455668] hover:text-[#032D47] transition-colors uppercase tracking-widest text-[11px]"
             >
               Privacy Policy
             </Link>

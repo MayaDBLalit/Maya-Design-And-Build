@@ -2,26 +2,40 @@
 
 @layer base {
   :root {
-    --background: #0d0f12;
-    --foreground: #f4f4f6;
-    --card: #14171c;
-    --card-foreground: #f4f4f6;
-    --popover: #14171c;
-    --popover-foreground: #f4f4f6;
-    --primary: #c5a869;
-    --primary-foreground: #0d0f12;
-    --secondary: #1d2128;
-    --secondary-foreground: #e2e4e9;
-    --muted: #1f232b;
-    --muted-foreground: #9ca3af;
-    --accent: #d4af37;
-    --accent-foreground: #0d0f12;
-    --destructive: #ef4444;
-    --destructive-foreground: #ffffff;
-    --border: #2b313d;
-    --input: #2b313d;
-    --ring: #c5a869;
+    /* Maya Brand Light Palette Foundation */
+    --background: #F9F6F5;        /* Bright Snow: Dominant canvas */
+    --foreground: #032D47;        /* Deep Space Blue: Primary typography */
+    --card: #FFFFFF;              /* Clean crisp architectural card surface */
+    --card-foreground: #032D47;
+    --popover: #FFFFFF;
+    --popover-foreground: #032D47;
+    --primary: #966015;           /* Golden Earth: Selective luxury accent */
+    --primary-foreground: #FFFFFF;
+    --secondary: #455668;         /* Blue Slate: Technical subtitles & metadata */
+    --secondary-foreground: #FFFFFF;
+    --muted: #F2EFEB;             /* Soft off-snow tint for subtle depth */
+    --muted-foreground: #455668;
+    --accent: #E1A857;            /* Sunlit Clay: Warm tactile highlights */
+    --accent-foreground: #032D47;
+    --destructive: #B91C1C;
+    --destructive-foreground: #FFFFFF;
+    --border: #BCC1C4;            /* Silver: Hairline architectural rules */
+    --input: #BCC1C4;
+    --ring: #966015;
+
+    /* Specific Named Brand Tokens */
+    --brand-snow: #F9F6F5;
+    --brand-navy: #032D47;
+    --brand-slate: #455668;
+    --brand-gold: #966015;
+    --brand-clay: #E1A857;
+    --brand-silver: #BCC1C4;
   }
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--background);
 }
 
 body {
@@ -29,4 +43,54 @@ body {
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: #E1A857;
+  color: #032D47;
+}
+
+/* Subtle Architectural Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-in {
+  animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* WCAG Accessibility: Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

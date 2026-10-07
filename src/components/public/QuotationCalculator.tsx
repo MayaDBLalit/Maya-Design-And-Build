@@ -106,7 +106,7 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
     [sortedRates]
   );
 
-  // Run calculation on initial mount and state changes
+  // Run calculation on initial mount and state changes with debounce
   useEffect(() => {
     const timer = setTimeout(() => {
       triggerServerCalculation(itemStates);
@@ -245,37 +245,37 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
   };
 
   return (
-    <section id="quotation" className="py-24 bg-[#0D0F12] relative border-t border-[#2B313D]/50">
+    <section id="quotation" className="py-28 bg-[#F9F6F5] relative border-t border-[#BCC1C4]/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-[#C5A869]">
+            <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-[#966015]">
               <span>08</span>
-              <span className="w-8 h-px bg-[#C5A869]/60" />
+              <span className="w-8 h-px bg-[#966015]/60" />
               <span>Transparent Pricing</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[#032D47]">
               Dynamic Quotation Calculator
             </h2>
           </div>
-          <p className="text-sm text-neutral-400 max-w-md font-light leading-relaxed">
+          <p className="text-sm sm:text-base text-[#455668] max-w-md font-normal leading-relaxed">
             Real-time, itemized engineering estimates. No fixed or opaque packages. Choose the exact
             disciplines required for your project.
           </p>
         </div>
 
         {/* Global Built-Up Area Control Banner */}
-        <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-[#14171C] via-[#1D2128] to-[#14171C] border border-[#C5A869]/40 mb-10 shadow-xl">
+        <div className="p-6 sm:p-8 rounded-xs bg-[#FFFFFF] border border-[#BCC1C4]/60 mb-10 shadow-[0_4px_20px_rgba(3,45,71,0.03)]">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
             <div className="space-y-1">
-              <span className="text-xs font-mono uppercase tracking-widest text-[#C5A869] font-bold">
+              <span className="text-xs font-mono uppercase tracking-widest text-[#966015] font-bold">
                 Project Scale Multiplier
               </span>
-              <h3 className="text-xl font-bold text-white tracking-tight">
+              <h3 className="text-xl font-bold text-[#032D47] tracking-tight">
                 Total Built-Up Area (Sq.Ft)
               </h3>
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-[#455668]">
                 Adjusting this value updates all area-based disciplines automatically.
               </p>
             </div>
@@ -288,9 +288,9 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                   step="50"
                   value={projectArea}
                   onChange={(e) => handleAreaChange(parseFloat(e.target.value) || 0)}
-                  className="w-40 sm:w-48 px-4 py-3 rounded-xl bg-[#0D0F12] border border-[#2B313D] focus:border-[#C5A869] text-xl font-mono font-black text-white text-right focus:outline-hidden"
+                  className="w-40 sm:w-48 px-4 py-3 rounded-xs bg-[#F9F6F5] border border-[#BCC1C4]/80 focus:border-[#032D47] text-xl font-mono font-black text-[#032D47] text-right focus:outline-hidden"
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono text-neutral-400 pointer-events-none">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono text-[#455668] pointer-events-none font-bold">
                   sq.ft
                 </span>
               </div>
@@ -299,7 +299,7 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
         </div>
 
         {/* Itemized Disciplines Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12">
           {sortedRates.map((rate) => {
             const isSelected = itemStates[rate.id]?.selected ?? false;
             const quantity = itemStates[rate.id]?.quantity ?? 0;
@@ -312,45 +312,45 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
             return (
               <div
                 key={rate.id}
-                className={`p-5 rounded-xl border transition-all duration-200 flex flex-col justify-between ${
+                className={`p-6 rounded-xs border transition-all duration-200 flex flex-col justify-between ${
                   isSelected
-                    ? "bg-[#14171C] border-[#C5A869]/60 shadow-md"
-                    : "bg-[#14171C]/40 border-[#2B313D]/60 opacity-60"
+                    ? "bg-[#FFFFFF] border-[#966015] shadow-xs"
+                    : "bg-[#FFFFFF]/60 border-[#BCC1C4]/50 opacity-60"
                 }`}
               >
-                <div className="space-y-3">
+                <div className="space-y-3.5">
                   {/* Top Bar: Checkbox + Title + Rate Badge */}
                   <div className="flex items-start justify-between gap-3">
-                    <label className="flex items-start gap-3 cursor-pointer select-none flex-1">
+                    <label className="flex items-start gap-3.5 cursor-pointer select-none flex-1">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleItem(rate.id)}
-                        className="mt-1 w-4 h-4 rounded text-[#C5A869] focus:ring-[#C5A869] bg-neutral-900 border-[#2B313D] cursor-pointer"
+                        className="mt-1 w-4 h-4 rounded-xs text-[#966015] focus:ring-[#966015] bg-[#F9F6F5] border-[#BCC1C4] cursor-pointer"
                       />
                       <div>
                         <h4
-                          className={`text-sm font-bold tracking-tight transition ${
-                            isSelected ? "text-white" : "text-neutral-400"
+                          className={`text-base font-bold tracking-tight transition-colors ${
+                            isSelected ? "text-[#032D47]" : "text-[#455668]"
                           }`}
                         >
                           {rate.serviceName}
                         </h4>
-                        <span className="text-[11px] font-mono text-neutral-400">
+                        <span className="text-xs font-mono text-[#455668]">
                           Rate: ₹{numericRate.toLocaleString("en-IN")} / {rate.unitSymbol || "unit"}
                         </span>
                       </div>
                     </label>
 
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-black/60 text-[#C5A869] border border-[#C5A869]/30">
+                    <span className="px-2.5 py-0.5 rounded-xs text-[10px] font-mono uppercase tracking-wider bg-[#F9F6F5] text-[#966015] border border-[#BCC1C4]/50 font-bold">
                       {rate.rateType}
                     </span>
                   </div>
 
                   {/* Quantity Input Controls */}
                   {isSelected && (
-                    <div className="pt-3 border-t border-[#2B313D]/60 flex items-center justify-between gap-4">
-                      <span className="text-xs text-neutral-400 font-mono">
+                    <div className="pt-3.5 border-t border-[#BCC1C4]/40 flex items-center justify-between gap-4">
+                      <span className="text-xs text-[#455668] font-mono">
                         Quantity ({rate.unitSymbol || "units"}):
                       </span>
 
@@ -363,7 +363,7 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                               Math.max(0, quantity - (rate.rateType === "per_sqft" ? 100 : 1))
                             )
                           }
-                          className="w-7 h-7 rounded bg-[#0D0F12] border border-[#2B313D] text-neutral-300 hover:text-white hover:border-[#C5A869] flex items-center justify-center font-mono font-bold text-sm transition"
+                          className="w-7 h-7 rounded-xs bg-[#F9F6F5] border border-[#BCC1C4]/80 text-[#032D47] hover:bg-[#032D47] hover:text-[#F9F6F5] flex items-center justify-center font-mono font-bold text-sm transition-colors cursor-pointer"
                         >
                           -
                         </button>
@@ -376,7 +376,7 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                           onChange={(e) =>
                             handleQuantityChange(rate.id, parseFloat(e.target.value) || 0)
                           }
-                          className="w-24 px-2 py-1 rounded bg-[#0D0F12] border border-[#2B313D] text-xs font-mono font-bold text-white text-center focus:outline-hidden focus:border-[#C5A869]"
+                          className="w-24 px-2 py-1 rounded-xs bg-[#F9F6F5] border border-[#BCC1C4]/80 text-xs font-mono font-bold text-[#032D47] text-center focus:outline-hidden focus:border-[#032D47]"
                         />
 
                         <button
@@ -387,7 +387,7 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                               quantity + (rate.rateType === "per_sqft" ? 100 : 1)
                             )
                           }
-                          className="w-7 h-7 rounded bg-[#0D0F12] border border-[#2B313D] text-neutral-300 hover:text-white hover:border-[#C5A869] flex items-center justify-center font-mono font-bold text-sm transition"
+                          className="w-7 h-7 rounded-xs bg-[#F9F6F5] border border-[#BCC1C4]/80 text-[#032D47] hover:bg-[#032D47] hover:text-[#F9F6F5] flex items-center justify-center font-mono font-bold text-sm transition-colors cursor-pointer"
                         >
                           +
                         </button>
@@ -398,11 +398,11 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
 
                 {/* Line Item Total */}
                 {isSelected && (
-                  <div className="pt-3 mt-3 border-t border-[#2B313D]/40 flex items-center justify-between text-xs">
-                    <span className="text-neutral-400 font-mono text-[11px]">
+                  <div className="pt-3.5 mt-3.5 border-t border-[#BCC1C4]/40 flex items-center justify-between text-xs">
+                    <span className="text-[#455668] font-mono text-[11px]">
                       Line Total:
                     </span>
-                    <span className="font-mono font-bold text-[#C5A869] text-sm">
+                    <span className="font-mono font-bold text-[#966015] text-sm">
                       {formatINR(lineTotal)}
                     </span>
                   </div>
@@ -413,23 +413,23 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
         </div>
 
         {/* Authoritative Total Estimation Summary Card */}
-        <div className="p-8 sm:p-10 rounded-2xl bg-[#14171C] border-2 border-[#C5A869] shadow-2xl relative overflow-hidden">
+        <div className="p-8 sm:p-10 rounded-xs bg-[#FFFFFF] border-2 border-[#032D47] shadow-[0_8px_30px_rgba(3,45,71,0.06)] relative">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
             <div className="space-y-2 max-w-xl">
               <div className="flex items-center gap-3">
-                <span className="px-3 py-1 rounded bg-[#C5A869]/20 text-[#C5A869] text-xs font-mono font-bold uppercase tracking-wider">
+                <span className="px-3 py-1 rounded-xs bg-[#032D47] text-[#F9F6F5] text-xs font-mono font-bold uppercase tracking-wider">
                   Authoritative Server Estimate
                 </span>
-                <span className="text-xs text-neutral-400 font-mono">
+                <span className="text-xs text-[#455668] font-mono font-bold">
                   {activeCount} of {sortedRates.length} Disciplines Selected
                 </span>
               </div>
 
-              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              <h3 className="text-2xl sm:text-3xl font-black text-[#032D47] tracking-tight">
                 Estimated Commercial Total
               </h3>
 
-              <p className="text-xs text-neutral-400 leading-relaxed font-light">
+              <p className="text-xs text-[#455668] leading-relaxed">
                 Estimated Quotation — Final scope and commercial terms are subject to physical site
                 inspection and executed engineering agreement by MAYA Design &amp; Build. No hidden
                 package markups.
@@ -438,12 +438,12 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
               <div className="text-left lg:text-right">
-                <span className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 block">
+                <span className="text-[11px] font-mono uppercase tracking-widest text-[#455668] block font-bold">
                   Total Estimate (INR)
                 </span>
-                <div className="text-3xl sm:text-4xl lg:text-5xl font-black font-mono text-white mt-1">
+                <div className="text-3xl sm:text-4xl lg:text-5xl font-black font-mono text-[#032D47] mt-1">
                   {isCalculating ? (
-                    <span className="text-[#C5A869] animate-pulse inline-flex items-center gap-2">
+                    <span className="text-[#966015] animate-pulse inline-flex items-center gap-2">
                       <Spinner size="md" />
                       <span>Calculating...</span>
                     </span>
@@ -460,7 +460,7 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                   setInquiryError(null);
                   setModalOpen(true);
                 }}
-                className="px-8 py-4 rounded-xl bg-gradient-to-r from-[#C5A869] to-[#d4af37] text-neutral-950 font-black text-xs uppercase tracking-[0.15em] hover:brightness-110 shadow-lg hover:shadow-[#C5A869]/30 transition duration-300 active:scale-95 whitespace-nowrap cursor-pointer"
+                className="px-8 py-4 rounded-xs bg-[#032D47] hover:bg-[#966015] text-[#F9F6F5] font-black text-xs uppercase tracking-[0.16em] transition-all duration-200 shadow-sm active:scale-98 whitespace-nowrap cursor-pointer"
               >
                 Submit Inquiry with this Estimate &rarr;
               </button>
@@ -471,36 +471,36 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
 
       {/* Official Inquiry Submission Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-[#14171C] border border-[#2B313D] rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 space-y-6">
+        <div className="fixed inset-0 z-50 bg-[#032D47]/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-[#FFFFFF] border border-[#BCC1C4]/80 rounded-xs w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 space-y-6">
             {inquirySuccessData ? (
               /* Success confirmation state */
               <div className="py-6 space-y-6 text-center">
-                <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto text-2xl font-bold">
+                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center justify-center mx-auto text-2xl font-bold">
                   ✓
                 </div>
 
                 <div className="space-y-2">
-                  <span className="px-3 py-1 rounded bg-[#C5A869]/20 text-[#C5A869] font-mono font-bold text-xs uppercase tracking-wider">
+                  <span className="px-3 py-1 rounded-xs bg-[#966015]/10 text-[#966015] font-mono font-bold text-xs uppercase tracking-wider border border-[#966015]/30">
                     {inquirySuccessData.reference}
                   </span>
-                  <h3 className="text-2xl font-black text-white">
+                  <h3 className="text-2xl font-black text-[#032D47]">
                     Quotation Inquiry Stored!
                   </h3>
-                  <p className="text-sm text-neutral-300 max-w-sm mx-auto leading-relaxed">
+                  <p className="text-sm text-[#455668] max-w-sm mx-auto leading-relaxed">
                     Your quotation breakdown and estimated total of{" "}
-                    <strong className="text-amber-400 font-mono">
+                    <strong className="text-[#032D47] font-mono">
                       {inquirySuccessData.formattedTotal}
                     </strong>{" "}
                     have been saved in MySQL. Our engineers have been alerted.
                   </p>
                 </div>
 
-                <div className="p-6 rounded-xl bg-[#0D0F12] border border-[#2B313D] space-y-4">
-                  <span className="text-xs font-mono uppercase tracking-wider text-neutral-400 block">
+                <div className="p-6 rounded-xs bg-[#F9F6F5] border border-[#BCC1C4]/60 space-y-4">
+                  <span className="text-xs font-mono uppercase tracking-wider text-[#455668] block font-bold">
                     Next Step: Continuation
                   </span>
-                  <p className="text-xs text-neutral-300 leading-relaxed">
+                  <p className="text-xs text-[#455668] leading-relaxed">
                     Click below to open WhatsApp with your prefilled inquiry reference and proposal
                     summary to connect directly with our engineering team:
                   </p>
@@ -509,7 +509,7 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                     href={inquirySuccessData.whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-950/40 active:scale-95"
+                    className="w-full inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider transition shadow-sm active:scale-98"
                   >
                     <span>💬 Continue on WhatsApp</span>
                     <span>&rarr;</span>
@@ -523,7 +523,7 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                       setModalOpen(false);
                       setInquirySuccessData(null);
                     }}
-                    className="text-xs font-mono text-neutral-400 hover:text-white uppercase tracking-wider underline"
+                    className="text-xs font-mono text-[#455668] hover:text-[#032D47] uppercase tracking-wider underline cursor-pointer"
                   >
                     Close Window
                   </button>
@@ -532,46 +532,46 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
             ) : (
               /* Quotation Inquiry Submission Form */
               <form onSubmit={handleSubmitQuotationInquiry} className="space-y-5">
-                <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#2B313D]">
+                <div className="flex items-start justify-between gap-4 pb-4 border-b border-[#BCC1C4]/40">
                   <div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#C5A869] font-bold">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#966015] font-bold">
                       Official Engineering Proposal
                     </span>
-                    <h3 className="text-xl font-bold text-white tracking-tight mt-1">
+                    <h3 className="text-xl font-bold text-[#032D47] tracking-tight mt-1">
                       Request Quotation Proposal
                     </h3>
                   </div>
                   <button
                     type="button"
                     onClick={() => setModalOpen(false)}
-                    className="p-1.5 rounded-lg bg-neutral-800 text-neutral-400 hover:text-white"
+                    className="p-1.5 rounded-xs bg-[#F9F6F5] text-[#455668] hover:text-[#032D47] hover:bg-[#F2EFEB] transition cursor-pointer"
                   >
                     ✕
                   </button>
                 </div>
 
                 {/* Estimate Snapshot Banner */}
-                <div className="p-4 rounded-xl bg-[#0D0F12] border border-[#2B313D] flex items-center justify-between">
+                <div className="p-4 rounded-xs bg-[#F9F6F5] border border-[#BCC1C4]/60 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 block">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#455668] block font-bold">
                       Built-Up Area &amp; Disciplines
                     </span>
-                    <span className="text-xs font-mono text-white font-semibold mt-0.5 block">
+                    <span className="text-xs font-mono text-[#032D47] font-semibold mt-0.5 block">
                       {projectArea} sq.ft • {activeCount} disciplines
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 block">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-[#455668] block font-bold">
                       Authoritative Total
                     </span>
-                    <span className="text-base font-mono font-black text-amber-400">
+                    <span className="text-base font-mono font-black text-[#032D47]">
                       {formatINR(displayTotal)}
                     </span>
                   </div>
                 </div>
 
                 {inquiryError && (
-                  <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs">
+                  <div className="p-3.5 rounded-xs bg-red-50 border border-red-200 text-red-800 text-xs">
                     ⚠️ {inquiryError}
                   </div>
                 )}
@@ -579,8 +579,8 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Full Name */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-mono uppercase tracking-wider text-neutral-300 block">
-                      Full Name <span className="text-[#C5A869]">*</span>
+                    <label className="text-xs font-mono uppercase tracking-wider text-[#032D47] font-bold block">
+                      Full Name <span className="text-[#966015]">*</span>
                     </label>
                     <input
                       type="text"
@@ -588,14 +588,14 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                       placeholder="e.g. Er. Rajesh Sharma"
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#0D0F12] border border-[#2B313D] focus:border-[#C5A869] text-sm text-white placeholder-neutral-500 focus:outline-hidden"
+                      className="w-full px-4 py-2.5 rounded-xs bg-[#F9F6F5] border border-[#BCC1C4]/80 focus:border-[#032D47] text-sm text-[#032D47] placeholder-[#455668]/50 focus:outline-hidden"
                     />
                   </div>
 
                   {/* Phone */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-mono uppercase tracking-wider text-neutral-300 block">
-                      Phone Number <span className="text-[#C5A869]">*</span>
+                    <label className="text-xs font-mono uppercase tracking-wider text-[#032D47] font-bold block">
+                      Phone Number <span className="text-[#966015]">*</span>
                     </label>
                     <input
                       type="tel"
@@ -603,7 +603,7 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                       placeholder="+91 98765 43210"
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#0D0F12] border border-[#2B313D] focus:border-[#C5A869] text-sm text-white placeholder-neutral-500 focus:outline-hidden font-mono"
+                      className="w-full px-4 py-2.5 rounded-xs bg-[#F9F6F5] border border-[#BCC1C4]/80 focus:border-[#032D47] text-sm text-[#032D47] placeholder-[#455668]/50 focus:outline-hidden font-mono"
                     />
                   </div>
                 </div>
@@ -611,44 +611,44 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Email */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-mono uppercase tracking-wider text-neutral-300 block">
-                      Email Address <span className="text-neutral-500">(Optional)</span>
+                    <label className="text-xs font-mono uppercase tracking-wider text-[#032D47] font-bold block">
+                      Email Address <span className="text-[#455668] font-normal">(Optional)</span>
                     </label>
                     <input
                       type="email"
                       placeholder="client@example.com"
                       value={customerEmail}
                       onChange={(e) => setCustomerEmail(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#0D0F12] border border-[#2B313D] focus:border-[#C5A869] text-sm text-white placeholder-neutral-500 focus:outline-hidden"
+                      className="w-full px-4 py-2.5 rounded-xs bg-[#F9F6F5] border border-[#BCC1C4]/80 focus:border-[#032D47] text-sm text-[#032D47] placeholder-[#455668]/50 focus:outline-hidden"
                     />
                   </div>
 
                   {/* Location */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-mono uppercase tracking-wider text-neutral-300 block">
-                      Site Location <span className="text-neutral-500">(Optional)</span>
+                    <label className="text-xs font-mono uppercase tracking-wider text-[#032D47] font-bold block">
+                      Site Location <span className="text-[#455668] font-normal">(Optional)</span>
                     </label>
                     <input
                       type="text"
                       placeholder="e.g. Bardoli / Surat / Navsari"
                       value={projectLocation}
                       onChange={(e) => setProjectLocation(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#0D0F12] border border-[#2B313D] focus:border-[#C5A869] text-sm text-white placeholder-neutral-500 focus:outline-hidden"
+                      className="w-full px-4 py-2.5 rounded-xs bg-[#F9F6F5] border border-[#BCC1C4]/80 focus:border-[#032D47] text-sm text-[#032D47] placeholder-[#455668]/50 focus:outline-hidden"
                     />
                   </div>
                 </div>
 
                 {/* Notes */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-mono uppercase tracking-wider text-neutral-300 block">
-                    Special Requirements / Site Conditions <span className="text-neutral-500">(Optional)</span>
+                  <label className="text-xs font-mono uppercase tracking-wider text-[#032D47] font-bold block">
+                    Special Requirements / Site Conditions <span className="text-[#455668] font-normal">(Optional)</span>
                   </label>
                   <textarea
                     rows={3}
                     placeholder="e.g. Plot dimensions, number of floors, target commencement month..."
                     value={customerNotes}
                     onChange={(e) => setCustomerNotes(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-[#0D0F12] border border-[#2B313D] focus:border-[#C5A869] text-sm text-white placeholder-neutral-500 focus:outline-hidden"
+                    className="w-full px-4 py-2.5 rounded-xs bg-[#F9F6F5] border border-[#BCC1C4]/80 focus:border-[#032D47] text-sm text-[#032D47] placeholder-[#455668]/50 focus:outline-hidden"
                   />
                 </div>
 
@@ -657,7 +657,7 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                     type="submit"
                     disabled={isSubmittingInquiry}
                     aria-busy={isSubmittingInquiry}
-                    className="w-full py-4 rounded-xl bg-gradient-to-r from-[#C5A869] to-[#d4af37] text-neutral-950 font-black text-xs uppercase tracking-[0.15em] hover:brightness-110 shadow-lg shadow-[#C5A869]/20 transition duration-300 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
+                    className="w-full py-4 rounded-xs bg-[#032D47] hover:bg-[#966015] text-[#F9F6F5] font-black text-xs uppercase tracking-[0.16em] transition-all duration-200 shadow-sm active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2"
                   >
                     {isSubmittingInquiry && <Spinner size="sm" />}
                     <span>
@@ -666,7 +666,7 @@ export function QuotationCalculator({ initialRates }: QuotationCalculatorProps) 
                         : "Confirm & Submit Quotation Inquiry →"}
                     </span>
                   </button>
-                  <p className="text-[11px] text-neutral-500 text-center mt-2.5">
+                  <p className="text-[11px] text-[#455668] text-center mt-2.5">
                     Inquiry and quotation line items will be stored securely in MySQL first.
                   </p>
                 </div>
