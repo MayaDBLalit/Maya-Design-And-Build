@@ -7,6 +7,7 @@ import {
   boolean,
   timestamp,
   bigint,
+  json,
 } from "drizzle-orm/mysql-core";
 import { relations } from "drizzle-orm";
 
@@ -225,3 +226,18 @@ export const inquiryItemsRelations = relations(inquiryItems, ({ one }) => ({
     references: [serviceRates.id],
   }),
 }));
+
+// ==============================================================================
+// 12. FIVE FACTORS TABLE (Space, Air, Fire, Water, Earth)
+// ==============================================================================
+export const fiveFactors = mysqlTable("five_factors", {
+  id: int("id").primaryKey().autoincrement(),
+  factorType: varchar("factor_type", { length: 50 }).notNull().unique(), // 'space', 'air', 'fire', 'water', 'earth'
+  titleEnglish: varchar("title_english", { length: 150 }).notNull(),
+  titleHindi: varchar("title_hindi", { length: 150 }).notNull(),
+  iconImage: varchar("icon_image", { length: 500 }),
+  tagline: varchar("tagline", { length: 255 }),
+  detailsText: text("details_text"),
+  impactPoints: json("impact_points").$type<string[]>(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+});

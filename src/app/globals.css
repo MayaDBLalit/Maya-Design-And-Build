@@ -83,6 +83,93 @@ body {
   animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Cinematic Landing Intro Keyframes */
+@keyframes introLogoAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(14px);
+    filter: drop-shadow(0 0 0 rgba(150, 96, 21, 0));
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.01) translateY(0);
+    filter: drop-shadow(0 20px 35px rgba(150, 96, 21, 0.16));
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: drop-shadow(0 14px 28px rgba(150, 96, 21, 0.12));
+  }
+}
+
+@keyframes introLineDraw {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.4;
+  }
+  100% {
+    width: 100px;
+    opacity: 1;
+  }
+}
+
+@keyframes introQuoteAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+    letter-spacing: 0.16em;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    letter-spacing: 0.24em;
+  }
+}
+
+@keyframes introDraftingCrossFade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.75;
+  }
+}
+
+.animate-intro-logo {
+  animation: introLogoAppear 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+
+.animate-intro-line {
+  animation: introLineDraw 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.85s both;
+}
+
+.animate-intro-quote {
+  animation: introQuoteAppear 0.9s cubic-bezier(0.16, 1, 0.3, 1) 1.1s both;
+}
+
+.animate-intro-drafting {
+  animation: introDraftingCrossFade 0.6s ease-out 0.1s both;
+}
+
+/* Compact Public Route Loader: Delayed Appearance Threshold */
+@keyframes loaderDelayedFadeIn {
+  0%, 65% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-loader-delayed {
+  animation: loaderDelayedFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* WCAG Accessibility: Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,

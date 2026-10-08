@@ -316,6 +316,23 @@ async function runSeed() {
       }
     }
 
+    // --------------------------------------------------------------------------
+    // 10. SEED FIVE FACTORS
+    // --------------------------------------------------------------------------
+    console.log("-> Seeding Five Factors...");
+    const { INITIAL_FIVE_FACTORS } = await import("./five-factors");
+    for (const factor of INITIAL_FIVE_FACTORS) {
+      const existing = await db
+        .select()
+        .from(schema.fiveFactors)
+        .where(eq(schema.fiveFactors.factorType, factor.factorType))
+        .limit(1);
+
+      if (existing.length === 0) {
+        await db.insert(schema.fiveFactors).values(factor);
+      }
+    }
+
     console.log("✅ Seed completed successfully!");
   } finally {
     await connection.end();

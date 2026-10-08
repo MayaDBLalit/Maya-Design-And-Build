@@ -10,7 +10,8 @@ interface NavLink {
 }
 
 const navLinks: NavLink[] = [
-  { label: "Home", href: "/" },
+  { label: "Home", href: "/home" },
+  { label: "Factors", href: "/factors" },
   { label: "Services", href: "/services" },
   { label: "Projects", href: "/projects" },
   { label: "Quotation", href: "/quotation" },
@@ -22,6 +23,7 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const isFactors = pathname === "/factors";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,29 +46,49 @@ export function Navbar() {
     };
   }, [mobileMenuOpen]);
 
+  const headerBgClass = isFactors
+    ? isScrolled
+      ? "bg-[#032D47]/95 backdrop-blur-md border-b border-white/10 py-3.5 shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
+      : "bg-[#032D47]/40 backdrop-blur-xs border-b border-white/10 py-4"
+    : isScrolled
+    ? "bg-[#F9F6F5]/95 backdrop-blur-md border-b border-[#BCC1C4]/50 py-3.5 shadow-[0_4px_24px_rgba(3,45,71,0.04)]"
+    : "bg-[#F9F6F5]/80 backdrop-blur-xs border-b border-[#BCC1C4]/20 py-5";
+
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? "bg-[#F9F6F5]/95 backdrop-blur-md border-b border-[#BCC1C4]/50 py-3.5 shadow-[0_4px_24px_rgba(3,45,71,0.04)]"
-            : "bg-[#F9F6F5]/80 backdrop-blur-xs border-b border-[#BCC1C4]/20 py-5"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${headerBgClass}`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Architectural Brand Identity */}
           <Link
-            href="/"
+            href="/home"
             className="group flex items-center gap-3.5 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#966015] rounded-xs"
           >
-            <div className="w-10 h-10 rounded-xs bg-[#032D47] text-[#F9F6F5] flex items-center justify-center font-serif text-xl font-bold tracking-wider group-hover:bg-[#966015] transition-colors duration-300 shadow-xs">
+            <div
+              className={`w-10 h-10 rounded-xs flex items-center justify-center font-serif text-xl font-bold tracking-wider transition-colors duration-300 shadow-xs ${
+                isFactors
+                  ? "bg-[#C5A869] text-[#032D47] group-hover:bg-white"
+                  : "bg-[#032D47] text-[#F9F6F5] group-hover:bg-[#966015]"
+              }`}
+            >
               M
             </div>
             <div className="flex flex-col">
-              <span className="text-lg font-black tracking-[0.22em] text-[#032D47] group-hover:text-[#966015] transition-colors duration-300">
+              <span
+                className={`text-lg font-black tracking-[0.22em] transition-colors duration-300 ${
+                  isFactors
+                    ? "text-white group-hover:text-[#C5A869]"
+                    : "text-[#032D47] group-hover:text-[#966015]"
+                }`}
+              >
                 MAYA
               </span>
-              <span className="text-[9px] uppercase tracking-[0.28em] text-[#455668] font-semibold">
+              <span
+                className={`text-[9px] uppercase tracking-[0.28em] font-semibold ${
+                  isFactors ? "text-neutral-300" : "text-[#455668]"
+                }`}
+              >
                 Design &amp; Build
               </span>
             </div>
@@ -76,23 +98,31 @@ export function Navbar() {
           <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
             {navLinks.map((link) => {
               const isActive =
-                link.href === "/"
-                  ? pathname === "/"
+                link.href === "/home"
+                  ? pathname === "/home"
                   : pathname?.startsWith(link.href);
+
+              const linkColorClass = isFactors
+                ? isActive
+                  ? "text-[#C5A869] font-bold"
+                  : "text-neutral-300 hover:text-white hover:bg-white/10"
+                : isActive
+                ? "text-[#966015] font-bold"
+                : "text-[#455668] hover:text-[#032D47] hover:bg-[#032D47]/5";
 
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative px-4 py-2 text-xs uppercase tracking-[0.16em] font-semibold transition-all duration-200 rounded-xs focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#966015] ${
-                    isActive
-                      ? "text-[#966015] font-bold"
-                      : "text-[#455668] hover:text-[#032D47] hover:bg-[#032D47]/5"
-                  }`}
+                  className={`relative px-4 py-2 text-xs uppercase tracking-[0.16em] font-semibold transition-all duration-200 rounded-xs focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#966015] ${linkColorClass}`}
                 >
                   {link.label}
                   {isActive && (
-                    <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-[#966015] rounded-full" />
+                    <span
+                      className={`absolute bottom-0 left-4 right-4 h-0.5 rounded-full ${
+                        isFactors ? "bg-[#C5A869]" : "bg-[#966015]"
+                      }`}
+                    />
                   )}
                 </Link>
               );
@@ -103,7 +133,11 @@ export function Navbar() {
           <div className="flex items-center gap-3">
             <Link
               href="/quotation"
-              className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xs bg-[#032D47] hover:bg-[#966015] text-[#F9F6F5] text-xs font-bold uppercase tracking-[0.16em] transition-all duration-200 shadow-xs active:scale-98 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#966015]"
+              className={`hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xs text-xs font-bold uppercase tracking-[0.16em] transition-all duration-200 shadow-xs active:scale-98 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#966015] ${
+                isFactors
+                  ? "bg-[#C5A869] hover:bg-white text-[#032D47]"
+                  : "bg-[#032D47] hover:bg-[#966015] text-[#F9F6F5]"
+              }`}
             >
               <span>Instant Estimate</span>
               <span className="text-sm font-serif">→</span>
@@ -112,7 +146,11 @@ export function Navbar() {
             {/* Mobile Menu Toggle Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xs text-[#032D47] hover:bg-[#032D47]/5 transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#966015]"
+              className={`lg:hidden p-2 rounded-xs transition focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#966015] ${
+                isFactors
+                  ? "text-white hover:bg-white/10"
+                  : "text-[#032D47] hover:bg-[#032D47]/5"
+              }`}
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
             >
@@ -168,8 +206,8 @@ export function Navbar() {
               <nav className="flex flex-col space-y-1.5">
                 {navLinks.map((link) => {
                   const isActive =
-                    link.href === "/"
-                      ? pathname === "/"
+                    link.href === "/home"
+                      ? pathname === "/home"
                       : pathname?.startsWith(link.href);
 
                   return (

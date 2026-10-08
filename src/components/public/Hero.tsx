@@ -13,16 +13,8 @@ export function Hero({ settings }: HeroProps) {
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center pt-32 pb-20 bg-[#F9F6F5] overflow-hidden">
-      {/* Subtle Architectural Grid Background */}
+      {/* Ambient Lighting Background */}
       <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, #032D47 1px, transparent 1px), linear-gradient(to bottom, #032D47 1px, transparent 1px)",
-            backgroundSize: "80px 80px",
-          }}
-        />
         {/* Soft Sunlit Clay Ambient Glow */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[#E1A857]/10 rounded-full blur-[140px]" />
       </div>

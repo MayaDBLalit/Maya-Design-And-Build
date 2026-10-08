@@ -54,7 +54,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           {/* Breadcrumb Navigation */}
           <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-mono text-[#455668]">
-            <Link href="/" className="hover:text-[#032D47] transition-colors">
+            <Link href="/home" className="hover:text-[#032D47] transition-colors">
               Home
             </Link>
             <span className="text-[#BCC1C4]">/</span>

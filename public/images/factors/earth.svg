@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- Isometric cube / bedrock architecture -->
+  <path d="M24 5L40 14V34L24 43L8 34V14L24 5Z" stroke="#D4AF37" stroke-width="1.75" stroke-linejoin="round" />
+  <path d="M24 5V23M24 23L8 14M24 23L40 14" stroke="#C5A869" stroke-width="1.5" stroke-linejoin="round" />
+  <path d="M24 23V43" stroke="#C5A869" stroke-width="1.75" stroke-linejoin="round" />
+  <path d="M16 28.5L8 24M32 28.5L40 24" stroke="#C5A869" stroke-width="1.25" stroke-dasharray="2 2" />
+  <circle cx="24" cy="23" r="2.5" fill="#D4AF37" />
+</svg>

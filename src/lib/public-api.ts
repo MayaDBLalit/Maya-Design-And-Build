@@ -9,6 +9,7 @@ import {
   serviceRates,
   units,
   settings,
+  fiveFactors,
 } from "@/db/schema";
 import { eq, asc, desc, and } from "drizzle-orm";
 import { ALLOWED_SETTING_KEYS } from "./validations";
@@ -147,5 +148,21 @@ export const getPublicSettings = cache(async () => {
   } catch (error) {
     console.error("Failed to query public settings:", error);
     return {};
+  }
+});
+
+export const CANONICAL_FACTOR_ORDER = ["space", "air", "fire", "water", "earth"] as const;
+
+export const getFiveFactors = cache(async () => {
+  try {
+    const list = await db.select().from(fiveFactors);
+    return list.sort((a, b) => {
+      const idxA = CANONICAL_FACTOR_ORDER.indexOf(a.factorType as any);
+      const idxB = CANONICAL_FACTOR_ORDER.indexOf(b.factorType as any);
+      return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
+    });
+  } catch (error) {
+    console.error("Failed to query five factors:", error);
+    return [];
   }
 });

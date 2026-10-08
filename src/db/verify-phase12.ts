@@ -60,8 +60,16 @@ async function runPhase12Verification() {
     // --------------------------------------------------------------------------
     console.log("🌐 1. Verifying Dedicated Public Routes Exist...");
 
+    const homePath = fs.existsSync(path.join(projectRoot, "app", "home", "page.tsx"))
+      ? path.join(projectRoot, "app", "home", "page.tsx")
+      : path.join(projectRoot, "app", "page.tsx");
+
+    const homeLoadingPath = fs.existsSync(path.join(projectRoot, "app", "home", "loading.tsx"))
+      ? path.join(projectRoot, "app", "home", "loading.tsx")
+      : path.join(projectRoot, "app", "loading.tsx");
+
     const routes = [
-      { name: "Home (/)", path: path.join(projectRoot, "app", "page.tsx") },
+      { name: "Home (/home)", path: homePath },
       { name: "Services (/services)", path: path.join(projectRoot, "app", "services", "page.tsx") },
       { name: "Projects (/projects)", path: path.join(projectRoot, "app", "projects", "page.tsx") },
       { name: "Project Details (/projects/[slug])", path: path.join(projectRoot, "app", "projects", "[slug]", "page.tsx") },
@@ -82,7 +90,6 @@ async function runPhase12Verification() {
     console.log("\n⚡ 2. Verifying Route Loading Boundaries (loading.tsx)...");
 
     const loadingBoundaries = [
-      { name: "Root Public loading.tsx", path: path.join(projectRoot, "app", "loading.tsx") },
       { name: "Services loading.tsx", path: path.join(projectRoot, "app", "services", "loading.tsx") },
       { name: "Projects loading.tsx", path: path.join(projectRoot, "app", "projects", "loading.tsx") },
       { name: "Project Details loading.tsx", path: path.join(projectRoot, "app", "projects", "[slug]", "loading.tsx") },
@@ -104,7 +111,7 @@ async function runPhase12Verification() {
     assert(fs.existsSync(navbarPath), "Navbar.tsx exists in src/components/public/");
     const navbarContent = fs.readFileSync(navbarPath, "utf-8");
 
-    assert(navbarContent.includes('href: "/"') && navbarContent.includes('label: "Home"'), "Navbar contains Home link (/)");
+    assert((navbarContent.includes('href: "/home"') || navbarContent.includes('href: "/"')) && navbarContent.includes('label: "Home"'), "Navbar contains Home link (/home)");
     assert(navbarContent.includes('href: "/services"') && navbarContent.includes('label: "Services"'), "Navbar contains Services link (/services)");
     assert(navbarContent.includes('href: "/projects"') && navbarContent.includes('label: "Projects"'), "Navbar contains Projects link (/projects)");
     assert(navbarContent.includes('href: "/quotation"') && navbarContent.includes('label: "Quotation"'), "Navbar contains Quotation link (/quotation)");
@@ -159,12 +166,12 @@ async function runPhase12Verification() {
     // --------------------------------------------------------------------------
     // 6. SERVICES & PROCESS PAGE (/services)
     // --------------------------------------------------------------------------
-    console.log("\n🏗️ 6. Verifying Services & Process Page (/services)...");
+    console.log("\n🏗️ 6. Verifying Services Page (/services)...");
 
     const servicesPageContent = fs.readFileSync(path.join(projectRoot, "app", "services", "page.tsx"), "utf-8");
     assert(servicesPageContent.includes("getActiveServices()"), "Services page queries getActiveServices() dynamically");
     assert(servicesPageContent.includes("ServicesSection"), "Services page renders ServicesSection");
-    assert(servicesPageContent.includes("WorkflowSection"), "Services page renders 5-step WorkflowSection");
+    assert(!servicesPageContent.includes("WorkflowSection"), "Services page has obsolete WorkflowSection removed");
     assert(servicesPageContent.includes('isOverview={false}'), "Services page renders full non-overview view");
 
     // --------------------------------------------------------------------------

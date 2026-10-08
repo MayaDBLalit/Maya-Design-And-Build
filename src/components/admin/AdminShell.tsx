@@ -13,6 +13,7 @@ import {
   IconUnits,
   IconSettings,
   IconInquiries,
+  IconFactors,
   IconLogOut,
   IconMenu,
   IconX,
@@ -27,6 +28,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { name: "Dashboard", href: "/admin/dashboard", icon: IconDashboard },
   { name: "Inquiries", href: "/admin/inquiries", icon: IconInquiries },
+  { name: "Five Factors", href: "/admin/factors", icon: IconFactors },
   { name: "Services", href: "/admin/services", icon: IconServices },
   { name: "Projects", href: "/admin/projects", icon: IconProjects },
   { name: "Team Members", href: "/admin/team", icon: IconTeam },

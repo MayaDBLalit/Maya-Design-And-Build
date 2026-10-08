@@ -253,3 +253,20 @@ export const adminInquiryUpdateSchema = z.object({
 
 export type AdminInquiryUpdateInput = z.infer<typeof adminInquiryUpdateSchema>;
 
+// ==============================================================================
+// 12. FIVE FACTORS SCHEMAS
+// ==============================================================================
+export const factorTypeEnum = z.enum(["space", "air", "fire", "water", "earth"]);
+export type FactorType = z.infer<typeof factorTypeEnum>;
+
+export const fiveFactorUpdateSchema = z.object({
+  titleEnglish: z.string().min(1, "English title is required").max(150),
+  titleHindi: z.string().min(1, "Hindi title is required").max(150),
+  iconImage: z.string().max(500).nullable().optional(),
+  tagline: z.string().max(255).nullable().optional(),
+  detailsText: z.string().max(5000).nullable().optional(),
+  impactPoints: z.array(z.string().min(1)).optional().default([]),
+});
+
+export type FiveFactorUpdateInput = z.infer<typeof fiveFactorUpdateSchema>;
+

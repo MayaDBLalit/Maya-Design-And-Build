@@ -23,7 +23,7 @@ export function Footer({ settings }: FooterProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 items-start">
           {/* Brand Column */}
           <div className="lg:col-span-2 space-y-4">
-            <Link href="/" className="inline-block group">
+            <Link href="/home" className="inline-block group">
               <span className="text-2xl font-black tracking-[0.2em] text-[#032D47] group-hover:text-[#966015] transition-colors">
                 MAYA
               </span>
@@ -89,13 +89,13 @@ export function Footer({ settings }: FooterProps) {
             </h4>
             <ul className="space-y-2.5 text-xs text-[#455668] font-semibold uppercase tracking-wider">
               <li>
-                <Link href="/" className="hover:text-[#032D47] transition-colors">
+                <Link href="/home" className="hover:text-[#032D47] transition-colors">
                   Home
                 </Link>
               </li>
               <li>
                 <Link href="/services" className="hover:text-[#032D47] transition-colors">
-                  Services &amp; Process
+                  Services &amp; Disciplines
                 </Link>
               </li>
               <li>

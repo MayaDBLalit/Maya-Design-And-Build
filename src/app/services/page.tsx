@@ -2,17 +2,17 @@ import React from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/public/Navbar";
 import { ServicesSection } from "@/components/public/ServicesSection";
-import { WorkflowSection } from "@/components/public/WorkflowSection";
 import { Footer } from "@/components/public/Footer";
 import { FloatingCallButton } from "@/components/public/FloatingCallButton";
 import { getActiveServices, getPublicSettings } from "@/lib/public-api";
 
+// Ensure real-time dynamic rendering so Admin CMS mutations reflect immediately on the website
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Services & Engineering Process | MAYA Design & Build",
+  title: "Architectural & Engineering Services | MAYA Design & Build",
   description:
-    "Explore our complete turnkey architectural and engineering disciplines, along with our rigorous 5-step engineering execution workflow.",
+    "Explore our complete turnkey architectural design, interior architecture, 3D photorealistic visualization, PMS controls, and civil construction disciplines.",
 };
 
 export default async function ServicesPage() {
@@ -33,10 +33,10 @@ export default async function ServicesPage() {
             <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.2em] text-[#966015]">
               <span>Turnkey Execution</span>
               <span className="w-8 h-px bg-[#966015]/60" />
-              <span>Disciplines &amp; Workflow</span>
+              <span>Disciplines &amp; Specializations</span>
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#032D47]">
-              Services &amp; Engineering Process
+              Architectural &amp; Engineering Services
             </h1>
             <p className="text-sm sm:text-base text-[#455668] max-w-2xl font-normal leading-relaxed">
               From 3D photorealistic visualization to turnkey site construction, our multidisciplinary team
@@ -47,9 +47,6 @@ export default async function ServicesPage() {
 
         {/* 3. All Active Services (Dynamically rendered, supports scalable Services CRUD) */}
         <ServicesSection initialServices={services} isOverview={false} />
-
-        {/* 4. The 5-Step Engineering Workflow (Complete Deliverables) */}
-        <WorkflowSection isOverview={false} />
 
         {/* 5. Consultation & Quotation CTA Banner */}
         <section className="py-24 bg-[#FFFFFF] border-t border-[#BCC1C4]/40 text-center relative overflow-hidden">
