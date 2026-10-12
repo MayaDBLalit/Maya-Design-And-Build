@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminAuth } from "@/lib/admin-auth";
 import { db } from "@/db";
-import { serviceRates, units } from "@/db/schema";
+import { serviceRates, units, services } from "@/db/schema";
 import { serviceRateSchema } from "@/lib/validations";
 import { asc, eq } from "drizzle-orm";
 
@@ -13,6 +13,8 @@ export async function GET(request: NextRequest) {
     const rates = await db
       .select({
         id: serviceRates.id,
+        mainServiceId: serviceRates.mainServiceId,
+        mainServiceTitle: services.title,
         serviceName: serviceRates.serviceName,
         unitId: serviceRates.unitId,
         unitName: units.unitName,
@@ -27,13 +29,14 @@ export async function GET(request: NextRequest) {
       })
       .from(serviceRates)
       .leftJoin(units, eq(serviceRates.unitId, units.id))
+      .leftJoin(services, eq(serviceRates.mainServiceId, services.id))
       .orderBy(asc(serviceRates.displayOrder), asc(serviceRates.id));
 
     return NextResponse.json({ success: true, rates });
   } catch (error) {
-    console.error("Admin quotation rates list error:", error);
+    console.error("Admin subservices list error:", error);
     return NextResponse.json(
-      { error: "Internal Server Error", message: "Failed to fetch quotation rates" },
+      { error: "Internal Server Error", message: "Failed to fetch subservices" },
       { status: 500 }
     );
   }
@@ -55,6 +58,20 @@ export async function POST(request: NextRequest) {
 
     const data = validation.data;
 
+    // Verify selected main service exists
+    const [mainService] = await db
+      .select({ id: services.id })
+      .from(services)
+      .where(eq(services.id, data.mainServiceId))
+      .limit(1);
+
+    if (!mainService) {
+      return NextResponse.json(
+        { error: "Selected Main Service does not exist" },
+        { status: 400 }
+      );
+    }
+
     // Verify selected unit exists
     const [unit] = await db
       .select({ id: units.id })
@@ -73,6 +90,7 @@ export async function POST(request: NextRequest) {
     const defaultQtyStr = String(data.defaultQty);
 
     const [insertResult] = await db.insert(serviceRates).values({
+      mainServiceId: data.mainServiceId,
       serviceName: data.serviceName,
       unitId: data.unitId,
       baseRate: baseRateStr,
@@ -85,6 +103,8 @@ export async function POST(request: NextRequest) {
     const [created] = await db
       .select({
         id: serviceRates.id,
+        mainServiceId: serviceRates.mainServiceId,
+        mainServiceTitle: services.title,
         serviceName: serviceRates.serviceName,
         unitId: serviceRates.unitId,
         unitName: units.unitName,
@@ -97,21 +117,22 @@ export async function POST(request: NextRequest) {
       })
       .from(serviceRates)
       .leftJoin(units, eq(serviceRates.unitId, units.id))
+      .leftJoin(services, eq(serviceRates.mainServiceId, services.id))
       .where(eq(serviceRates.id, insertResult.insertId))
       .limit(1);
 
     return NextResponse.json(
       {
         success: true,
-        message: "Quotation rate created successfully",
+        message: "SubService created successfully",
         rate: created,
       },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Admin quotation rate create error:", error);
+    console.error("Admin subservice create error:", error);
     return NextResponse.json(
-      { error: "Internal Server Error", message: "Failed to create quotation rate" },
+      { error: "Internal Server Error", message: "Failed to create subservice" },
       { status: 500 }
     );
   }

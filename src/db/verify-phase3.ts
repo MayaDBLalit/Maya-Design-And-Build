@@ -241,6 +241,7 @@ async function runPhase3Verification() {
 
   // Create an 11th rate (extensible beyond 10)
   const [extRate] = await db.insert(serviceRates).values({
+    mainServiceId: 3,
     serviceName: "Geotechnical Soil & Foundation Investigation",
     unitId: sqftUnit.id,
     baseRate: "35.00",

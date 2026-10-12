@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
     const list = await db
       .select({
         id: inquiries.id,
+        inquirySource: inquiries.inquirySource,
         fullName: inquiries.fullName,
         email: inquiries.email,
         phone: inquiries.phone,
@@ -58,6 +59,11 @@ export async function GET(request: NextRequest) {
         tentativeBudget: inquiries.tentativeBudget,
         status: inquiries.status,
         adminNotes: inquiries.adminNotes,
+        calculatorTitleSnapshot: inquiries.calculatorTitleSnapshot,
+        bhkValueSnapshot: inquiries.bhkValueSnapshot,
+        packageNameSnapshot: inquiries.packageNameSnapshot,
+        packageRateSnapshot: inquiries.packageRateSnapshot,
+        builtUpArea: inquiries.builtUpArea,
         createdAt: inquiries.createdAt,
         updatedAt: inquiries.updatedAt,
       })

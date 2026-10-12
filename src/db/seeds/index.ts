@@ -143,7 +143,10 @@ async function runSeed() {
         .limit(1);
 
       if (existing.length === 0) {
-        await db.insert(schema.serviceRates).values(r);
+        await db.insert(schema.serviceRates).values({
+          ...r,
+          mainServiceId: 3,
+        });
       }
     }
 

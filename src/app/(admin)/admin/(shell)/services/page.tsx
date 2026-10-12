@@ -4,12 +4,14 @@ import React, { useState, useEffect } from "react";
 import { Modal } from "@/components/admin/Modal";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { FileUpload } from "@/components/admin/FileUpload";
+import Link from "next/link";
 import {
   IconServices,
   IconPlus,
   IconEdit,
   IconTrash,
   IconCheck,
+  IconEye,
 } from "@/components/admin/Icons";
 import { generateSlug } from "@/lib/slug";
 import { CardSkeleton } from "@/components/ui/Skeleton";
@@ -364,6 +366,14 @@ export default function AdminServicesPage() {
                   ID: #{service.id}
                 </span>
                 <div className="flex items-center gap-2">
+                  <Link
+                    href={`/admin/services/${service.id}`}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-[#C5A869] hover:text-neutral-950 text-neutral-300 text-xs font-semibold uppercase tracking-wider transition cursor-pointer"
+                    title="View Service Details"
+                  >
+                    <IconEye className="w-3.5 h-3.5" />
+                    <span>Details</span>
+                  </Link>
                   <button
                     onClick={() => handleOpenEdit(service)}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-[#C5A869] hover:text-neutral-950 text-white text-xs font-semibold uppercase tracking-wider transition cursor-pointer"

@@ -25,6 +25,7 @@ interface InquiryItem {
 interface Inquiry {
   id: number;
   reference: string;
+  inquirySource?: "contact" | "calculator" | "package";
   fullName: string;
   email: string | null;
   phone: string;
@@ -35,6 +36,11 @@ interface Inquiry {
   adminNotes: string | null;
   itemsCount: number;
   hasQuotation: boolean;
+  calculatorTitleSnapshot?: string | null;
+  bhkValueSnapshot?: string | null;
+  packageNameSnapshot?: string | null;
+  packageRateSnapshot?: string | null;
+  builtUpArea?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -225,6 +231,30 @@ export default function AdminInquiriesPage() {
     }
   };
 
+  const getSourceBadge = (source?: string) => {
+    switch (source) {
+      case "calculator":
+        return (
+          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">
+            Calculator
+          </span>
+        );
+      case "package":
+        return (
+          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
+            Package
+          </span>
+        );
+      case "contact":
+      default:
+        return (
+          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-neutral-800 text-neutral-300 border border-neutral-700">
+            Contact
+          </span>
+        );
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -337,9 +367,10 @@ export default function AdminInquiriesPage() {
               <thead className="bg-[#0D0F12] text-xs font-mono uppercase text-neutral-400 border-b border-[#2B313D]">
                 <tr>
                   <th className="py-3 px-4">Ref ID</th>
+                  <th className="py-3 px-4">Source</th>
                   <th className="py-3 px-4">Customer Details</th>
-                  <th className="py-3 px-4">Service / Requirement</th>
-                  <th className="py-3 px-4">Quotation Total</th>
+                  <th className="py-3 px-4">Scope &amp; Context</th>
+                  <th className="py-3 px-4">Commercial Estimate</th>
                   <th className="py-3 px-4">Status</th>
                   <th className="py-3 px-4">Submitted</th>
                   <th className="py-3 px-4 text-right">Actions</th>
@@ -366,6 +397,11 @@ export default function AdminInquiriesPage() {
                         <span className="text-[#C5A869]">{inq.reference}</span>
                       </td>
 
+                      {/* Source */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        {getSourceBadge(inq.inquirySource)}
+                      </td>
+
                       {/* Customer */}
                       <td className="py-4 px-4">
                         <div className="font-semibold text-white tracking-tight">
@@ -385,14 +421,38 @@ export default function AdminInquiriesPage() {
                         </div>
                       </td>
 
-                      {/* Service */}
+                      {/* Scope & Context */}
                       <td className="py-4 px-4 max-w-xs">
-                        <div className="text-neutral-300 font-medium truncate">
-                          {inq.interestedService || "General Consultation"}
-                        </div>
-                        {inq.message && (
-                          <div className="text-xs text-neutral-500 truncate mt-0.5">
-                            "{inq.message}"
+                        {inq.inquirySource === "calculator" ? (
+                          <div>
+                            <div className="text-neutral-200 font-semibold text-xs">
+                              {inq.calculatorTitleSnapshot || inq.interestedService || "Calculator Inquiry"}
+                            </div>
+                            <div className="text-[11px] font-mono text-[#C5A869] mt-0.5">
+                              {inq.bhkValueSnapshot && <span>{inq.bhkValueSnapshot} • </span>}
+                              {inq.builtUpArea && <span>{parseFloat(inq.builtUpArea).toLocaleString("en-IN")} sq.ft</span>}
+                            </div>
+                          </div>
+                        ) : inq.inquirySource === "package" ? (
+                          <div>
+                            <div className="text-neutral-200 font-semibold text-xs">
+                              {inq.packageNameSnapshot || "Package Estimate"}
+                            </div>
+                            <div className="text-[11px] font-mono text-cyan-400 mt-0.5">
+                              {inq.interestedService && <span>{inq.interestedService} • </span>}
+                              {inq.builtUpArea && <span>{parseFloat(inq.builtUpArea).toLocaleString("en-IN")} sq.ft</span>}
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <div className="text-neutral-300 font-medium truncate">
+                              {inq.interestedService || "General Consultation"}
+                            </div>
+                            {inq.message && (
+                              <div className="text-xs text-neutral-500 truncate mt-0.5">
+                                "{inq.message}"
+                              </div>
+                            )}
                           </div>
                         )}
                       </td>
@@ -562,6 +622,61 @@ export default function AdminInquiriesPage() {
                     </a>
                   </div>
                 </div>
+
+                {/* Scope & Calculation Snapshot Context */}
+                {(inquiryDetail.inquirySource === "calculator" || inquiryDetail.inquirySource === "package" || inquiryDetail.builtUpArea) && (
+                  <div className="p-4 rounded-xl bg-[#0D0F12] border border-[#C5A869]/30 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono uppercase tracking-wider text-[#C5A869] font-bold">
+                        {inquiryDetail.inquirySource === "calculator"
+                          ? "📐 Calculator Estimate Context"
+                          : inquiryDetail.inquirySource === "package"
+                          ? "📦 Package Estimate Context"
+                          : "Commercial Scope Details"}
+                      </span>
+                      {getSourceBadge(inquiryDetail.inquirySource)}
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                      {inquiryDetail.calculatorTitleSnapshot && (
+                        <div>
+                          <span className="text-neutral-400 block text-[10px] uppercase">Calculator</span>
+                          <span className="text-white font-semibold">{inquiryDetail.calculatorTitleSnapshot}</span>
+                        </div>
+                      )}
+                      {inquiryDetail.packageNameSnapshot && (
+                        <div>
+                          <span className="text-neutral-400 block text-[10px] uppercase">Package</span>
+                          <span className="text-cyan-400 font-semibold">{inquiryDetail.packageNameSnapshot}</span>
+                        </div>
+                      )}
+                      {inquiryDetail.packageRateSnapshot && (
+                        <div>
+                          <span className="text-neutral-400 block text-[10px] uppercase">Package Rate</span>
+                          <span className="text-amber-400 font-semibold">₹{parseFloat(inquiryDetail.packageRateSnapshot).toLocaleString("en-IN")}/sq.ft</span>
+                        </div>
+                      )}
+                      {inquiryDetail.bhkValueSnapshot && (
+                        <div>
+                          <span className="text-neutral-400 block text-[10px] uppercase">BHK Type</span>
+                          <span className="text-[#C5A869] font-semibold">{inquiryDetail.bhkValueSnapshot}</span>
+                        </div>
+                      )}
+                      {inquiryDetail.builtUpArea && (
+                        <div>
+                          <span className="text-neutral-400 block text-[10px] uppercase">Built-Up Area</span>
+                          <span className="text-white font-bold">{parseFloat(inquiryDetail.builtUpArea).toLocaleString("en-IN")} sq.ft</span>
+                        </div>
+                      )}
+                      {inquiryDetail.tentativeBudget && (
+                        <div>
+                          <span className="text-neutral-400 block text-[10px] uppercase">Calculated Estimate</span>
+                          <span className="text-amber-400 font-bold">₹{parseFloat(inquiryDetail.tentativeBudget).toLocaleString("en-IN")}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Customer Message */}
                 {inquiryDetail.message && (

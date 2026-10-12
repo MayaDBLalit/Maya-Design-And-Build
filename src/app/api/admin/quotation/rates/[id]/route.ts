@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminAuth } from "@/lib/admin-auth";
 import { db } from "@/db";
-import { serviceRates, units } from "@/db/schema";
+import { serviceRates, units, services, workflows, workflowSteps, packages, packageSubservices, calculators, calculatorSubservices } from "@/db/schema";
 import { serviceRateSchema } from "@/lib/validations";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 
 export async function GET(
   request: NextRequest,
@@ -15,13 +15,15 @@ export async function GET(
   const { id } = await params;
   const rateId = parseInt(id, 10);
   if (isNaN(rateId)) {
-    return NextResponse.json({ error: "Invalid quotation rate ID" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid SubService ID" }, { status: 400 });
   }
 
   try {
     const [rate] = await db
       .select({
         id: serviceRates.id,
+        mainServiceId: serviceRates.mainServiceId,
+        mainServiceTitle: services.title,
         serviceName: serviceRates.serviceName,
         unitId: serviceRates.unitId,
         unitName: units.unitName,
@@ -34,18 +36,72 @@ export async function GET(
       })
       .from(serviceRates)
       .leftJoin(units, eq(serviceRates.unitId, units.id))
+      .leftJoin(services, eq(serviceRates.mainServiceId, services.id))
       .where(eq(serviceRates.id, rateId))
       .limit(1);
 
     if (!rate) {
-      return NextResponse.json({ error: "Quotation rate not found" }, { status: 404 });
+      return NextResponse.json({ error: "SubService not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, rate });
+    // 1. Fetch associated workflow and steps
+    const [wf] = await db
+      .select()
+      .from(workflows)
+      .where(eq(workflows.subServiceId, rateId))
+      .limit(1);
+
+    let workflow = null;
+    if (wf) {
+      const steps = await db
+        .select()
+        .from(workflowSteps)
+        .where(eq(workflowSteps.workflowId, wf.id))
+        .orderBy(asc(workflowSteps.displayOrder), asc(workflowSteps.stepNumber));
+
+      workflow = {
+        ...wf,
+        steps,
+      };
+    }
+
+    // 2. Fetch packages containing this sub-service
+    const pkgs = await db
+      .select({
+        id: packages.id,
+        packageName: packages.packageName,
+        packageRatePerSqFt: packages.packageRatePerSqFt,
+        isRecommended: packages.isRecommended,
+        isActive: packages.isActive,
+        showRatePublicly: packages.showRatePublicly,
+      })
+      .from(packageSubservices)
+      .innerJoin(packages, eq(packageSubservices.packageId, packages.id))
+      .where(eq(packageSubservices.subServiceId, rateId));
+
+    // 3. Fetch calculators containing this sub-service
+    const calcs = await db
+      .select({
+        id: calculators.id,
+        title: calculators.title,
+        slug: calculators.slug,
+        isActive: calculators.isActive,
+      })
+      .from(calculatorSubservices)
+      .innerJoin(calculators, eq(calculatorSubservices.calculatorId, calculators.id))
+      .where(eq(calculatorSubservices.subServiceId, rateId));
+
+    return NextResponse.json({
+      success: true,
+      rate,
+      workflow,
+      packages: pkgs,
+      calculators: calcs,
+    });
   } catch (error) {
-    console.error("Admin quotation rate GET error:", error);
+    console.error("Admin subservice GET error:", error);
     return NextResponse.json(
-      { error: "Internal Server Error", message: "Failed to fetch quotation rate" },
+      { error: "Internal Server Error", message: "Failed to fetch subservice" },
       { status: 500 }
     );
   }
@@ -61,7 +117,7 @@ export async function PUT(
   const { id } = await params;
   const rateId = parseInt(id, 10);
   if (isNaN(rateId)) {
-    return NextResponse.json({ error: "Invalid quotation rate ID" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid SubService ID" }, { status: 400 });
   }
 
   try {
@@ -83,7 +139,21 @@ export async function PUT(
       .limit(1);
 
     if (!existing) {
-      return NextResponse.json({ error: "Quotation rate not found" }, { status: 404 });
+      return NextResponse.json({ error: "SubService not found" }, { status: 404 });
+    }
+
+    // Verify main service exists
+    const [mainService] = await db
+      .select({ id: services.id })
+      .from(services)
+      .where(eq(services.id, data.mainServiceId))
+      .limit(1);
+
+    if (!mainService) {
+      return NextResponse.json(
+        { error: "Selected Main Service does not exist" },
+        { status: 400 }
+      );
     }
 
     // Verify unit exists
@@ -106,6 +176,7 @@ export async function PUT(
     await db
       .update(serviceRates)
       .set({
+        mainServiceId: data.mainServiceId,
         serviceName: data.serviceName,
         unitId: data.unitId,
         baseRate: baseRateStr,
@@ -119,6 +190,8 @@ export async function PUT(
     const [updated] = await db
       .select({
         id: serviceRates.id,
+        mainServiceId: serviceRates.mainServiceId,
+        mainServiceTitle: services.title,
         serviceName: serviceRates.serviceName,
         unitId: serviceRates.unitId,
         unitName: units.unitName,
@@ -131,18 +204,19 @@ export async function PUT(
       })
       .from(serviceRates)
       .leftJoin(units, eq(serviceRates.unitId, units.id))
+      .leftJoin(services, eq(serviceRates.mainServiceId, services.id))
       .where(eq(serviceRates.id, rateId))
       .limit(1);
 
     return NextResponse.json({
       success: true,
-      message: "Quotation rate updated successfully",
+      message: "SubService updated successfully",
       rate: updated,
     });
   } catch (error) {
-    console.error("Admin quotation rate update error:", error);
+    console.error("Admin subservice update error:", error);
     return NextResponse.json(
-      { error: "Internal Server Error", message: "Failed to update quotation rate" },
+      { error: "Internal Server Error", message: "Failed to update subservice" },
       { status: 500 }
     );
   }
@@ -158,7 +232,7 @@ export async function DELETE(
   const { id } = await params;
   const rateId = parseInt(id, 10);
   if (isNaN(rateId)) {
-    return NextResponse.json({ error: "Invalid quotation rate ID" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid SubService ID" }, { status: 400 });
   }
 
   try {
@@ -169,19 +243,19 @@ export async function DELETE(
       .limit(1);
 
     if (!existing) {
-      return NextResponse.json({ error: "Quotation rate not found" }, { status: 404 });
+      return NextResponse.json({ error: "SubService not found" }, { status: 404 });
     }
 
     await db.delete(serviceRates).where(eq(serviceRates.id, rateId));
 
     return NextResponse.json({
       success: true,
-      message: `Quotation rate "${existing.serviceName}" deleted successfully`,
+      message: `SubService "${existing.serviceName}" deleted successfully`,
     });
   } catch (error) {
-    console.error("Admin quotation rate delete error:", error);
+    console.error("Admin subservice delete error:", error);
     return NextResponse.json(
-      { error: "Internal Server Error", message: "Failed to delete quotation rate" },
+      { error: "Internal Server Error", message: "Failed to delete subservice" },
       { status: 500 }
     );
   }

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminAuth } from "@/lib/admin-auth";
 import { db } from "@/db";
-import { services } from "@/db/schema";
+import { packages, packageSubservices, services, serviceRates, units, workflows, workflowSteps } from "@/db/schema";
 import { serviceUpdateSchema } from "@/lib/validations";
-import { eq, and, ne } from "drizzle-orm";
+import { eq, and, ne, asc, inArray } from "drizzle-orm";
 import { generateSlug } from "@/lib/slug";
 
 export async function GET(
@@ -30,7 +30,117 @@ export async function GET(
       return NextResponse.json({ error: "Service not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, service });
+    // 1. Fetch connected packages
+    const servicePackages = await db
+      .select({
+        id: packages.id,
+        packageName: packages.packageName,
+        packageRatePerSqFt: packages.packageRatePerSqFt,
+        displayOrder: packages.displayOrder,
+        isActive: packages.isActive,
+        showRatePublicly: packages.showRatePublicly,
+        isRecommended: packages.isRecommended,
+      })
+      .from(packages)
+      .where(eq(packages.mainServiceId, serviceId))
+      .orderBy(asc(packages.displayOrder));
+
+    const pkgIds = servicePackages.map((p) => p.id);
+    const pkgSubservicesMap: Record<number, { id: number; name: string }[]> = {};
+
+    if (pkgIds.length > 0) {
+      const junctionRows = await db
+        .select({
+          packageId: packageSubservices.packageId,
+          subServiceId: packageSubservices.subServiceId,
+          subServiceName: serviceRates.serviceName,
+        })
+        .from(packageSubservices)
+        .leftJoin(serviceRates, eq(packageSubservices.subServiceId, serviceRates.id))
+        .where(inArray(packageSubservices.packageId, pkgIds));
+
+      junctionRows.forEach((j) => {
+        if (!pkgSubservicesMap[j.packageId]) pkgSubservicesMap[j.packageId] = [];
+        if (j.subServiceId && j.subServiceName) {
+          pkgSubservicesMap[j.packageId].push({
+            id: j.subServiceId,
+            name: j.subServiceName,
+          });
+        }
+      });
+    }
+
+    const packagesWithItems = servicePackages.map((p) => ({
+      ...p,
+      subServices: pkgSubservicesMap[p.id] || [],
+    }));
+
+    // 2. Fetch connected sub-services
+    const subServicesList = await db
+      .select({
+        id: serviceRates.id,
+        serviceName: serviceRates.serviceName,
+        baseRate: serviceRates.baseRate,
+        rateType: serviceRates.rateType,
+        defaultQty: serviceRates.defaultQty,
+        unitName: units.unitName,
+        unitSymbol: units.unitSymbol,
+        isActive: serviceRates.isActive,
+        displayOrder: serviceRates.displayOrder,
+      })
+      .from(serviceRates)
+      .leftJoin(units, eq(serviceRates.unitId, units.id))
+      .where(eq(serviceRates.mainServiceId, serviceId))
+      .orderBy(asc(serviceRates.displayOrder));
+
+    // 3. Fetch workflows and steps for these sub-services
+    const subIds = subServicesList.map((s) => s.id);
+    let workflowsList: Array<{
+      id: number;
+      subServiceId: number;
+      subServiceName: string | null;
+      title: string;
+      isActive: boolean;
+      steps: Array<any>;
+    }> = [];
+
+    if (subIds.length > 0) {
+      const wfs = await db
+        .select({
+          id: workflows.id,
+          subServiceId: workflows.subServiceId,
+          subServiceName: serviceRates.serviceName,
+          title: workflows.title,
+          isActive: workflows.isActive,
+        })
+        .from(workflows)
+        .leftJoin(serviceRates, eq(workflows.subServiceId, serviceRates.id))
+        .where(inArray(workflows.subServiceId, subIds));
+
+      const wfIds = wfs.map((w) => w.id);
+      let steps: Array<any> = [];
+
+      if (wfIds.length > 0) {
+        steps = await db
+          .select()
+          .from(workflowSteps)
+          .where(inArray(workflowSteps.workflowId, wfIds))
+          .orderBy(asc(workflowSteps.displayOrder), asc(workflowSteps.stepNumber));
+      }
+
+      workflowsList = wfs.map((w) => ({
+        ...w,
+        steps: steps.filter((s) => s.workflowId === w.id),
+      }));
+    }
+
+    return NextResponse.json({
+      success: true,
+      service,
+      packages: packagesWithItems,
+      subServices: subServicesList,
+      workflows: workflowsList,
+    });
   } catch (error) {
     console.error("Admin service GET error:", error);
     return NextResponse.json(

@@ -129,7 +129,7 @@ export const galleryItemSchema = z.object({
 export type GalleryItemInput = z.infer<typeof galleryItemSchema>;
 
 // ==============================================================================
-// 7. SERVICE RATES (DYNAMIC QUOTATION) SCHEMAS
+// 7. SUBSERVICES (SERVICE RATES) SCHEMAS
 // ==============================================================================
 export const rateTypeEnum = z.enum([
   "fixed",
@@ -140,7 +140,8 @@ export const rateTypeEnum = z.enum([
 ]);
 
 export const serviceRateSchema = z.object({
-  serviceName: z.string().min(2, "Discipline/Service name is required").max(150),
+  mainServiceId: z.number().int().positive("Valid Main Service must be selected"),
+  serviceName: z.string().min(2, "SubService name is required").max(150),
   unitId: z.number().int().positive("Valid unit must be selected"),
   baseRate: z.union([z.number().positive("Base rate must be greater than 0"), z.string()]),
   rateType: rateTypeEnum.default("per_sqft"),
@@ -150,6 +151,74 @@ export const serviceRateSchema = z.object({
 });
 
 export type ServiceRateInput = z.infer<typeof serviceRateSchema>;
+
+// ==============================================================================
+// 7B. PACKAGES SCHEMAS
+// ==============================================================================
+export const packageSchema = z.object({
+  packageName: z.string().min(2, "Package name is required").max(150),
+  mainServiceId: z.number().int().positive("Main Service is required"),
+  packageRatePerSqFt: z.union([
+    z.number().positive("Package rate must be greater than 0"),
+    z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Package rate must be greater than 0"),
+  ]),
+  displayOrder: z.number().int().default(0),
+  isActive: z.boolean().default(true),
+  showRatePublicly: z.boolean().default(false),
+  isRecommended: z.boolean().default(false),
+  subServiceIds: z.array(z.number().int().positive()).optional().default([]),
+});
+
+export type PackageInput = z.infer<typeof packageSchema>;
+
+// ==============================================================================
+// 7C. WORKFLOWS & WORKFLOW STEPS SCHEMAS
+// ==============================================================================
+export const workflowStepSchema = z.object({
+  id: z.number().int().optional(),
+  stepNumber: z.number().int().min(1, "Step number must be at least 1"),
+  title: z.string().min(1, "Step title is required").max(150),
+  details: z.string().nullable().optional(),
+  displayOrder: z.number().int().default(0),
+});
+
+export const workflowSchema = z.object({
+  subServiceId: z.number().int().positive("SubService is required"),
+  title: z.string().min(2, "Workflow title is required").max(150),
+  isActive: z.boolean().default(true),
+  steps: z.array(workflowStepSchema).optional().default([]),
+});
+
+export type WorkflowStepInput = z.infer<typeof workflowStepSchema>;
+export type WorkflowInput = z.infer<typeof workflowSchema>;
+
+// ==============================================================================
+// 7D. CALCULATORS SCHEMAS
+// ==============================================================================
+export const calculatorSchema = z.object({
+  title: z.string().min(2, "Calculator title is required").max(150),
+  slug: z
+    .string()
+    .min(2, "Slug must be at least 2 characters")
+    .max(150)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase alphanumeric with hyphens"),
+  displayOrder: z.number().int().default(0),
+  isActive: z.boolean().default(true),
+  subServiceIds: z.array(z.number().int().positive()).optional().default([]),
+});
+
+export type CalculatorInput = z.infer<typeof calculatorSchema>;
+
+// ==============================================================================
+// 7E. BHK CONFIGURATION SCHEMAS
+// ==============================================================================
+export const bhkConfigurationSchema = z.object({
+  bhkNumber: z.number().int().min(1, "BHK number must be at least 1").max(50, "BHK number cannot exceed 50"),
+  displayOrder: z.number().int().default(0),
+  isActive: z.boolean().default(true),
+});
+
+export type BHKConfigurationInput = z.infer<typeof bhkConfigurationSchema>;
 
 // ==============================================================================
 // 8. UNITS SCHEMAS
@@ -204,8 +273,10 @@ export type SettingsUpdateInput = z.infer<typeof settingsUpdateSchema>;
 // 10. INQUIRIES & LEAD CAPTURE SCHEMAS
 // ==============================================================================
 export const inquiryStatusEnum = z.enum(["new", "contacted", "in_progress", "closed"]);
+export const inquirySourceEnum = z.enum(["contact", "calculator", "package"]);
 
 export const inquirySubmissionSchema = z.object({
+  inquirySource: inquirySourceEnum.default("contact"),
   fullName: z
     .string()
     .min(2, "Full name must be at least 2 characters")
@@ -234,6 +305,26 @@ export const inquirySubmissionSchema = z.object({
   interestedService: z.string().max(150).optional().nullable(),
   message: z.string().max(5000).optional().nullable(),
   tentativeBudget: z.union([z.number(), z.string()]).optional().nullable(),
+
+  // Calculator-specific fields
+  calculatorId: z.number().int().positive().optional().nullable(),
+  bhkId: z.number().int().positive().optional().nullable(),
+  builtUpArea: z.union([
+    z.number().positive("Built-up area must be positive"),
+    z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Built-up area must be positive"),
+  ]).optional().nullable(),
+  subServiceIds: z.array(z.number().int().positive()).optional(),
+  subServiceQuantities: z.record(z.string(), z.number().min(0)).optional(),
+  subServices: z
+    .array(
+      z.object({
+        id: z.number().int().positive(),
+        quantity: z.number().min(0).optional(),
+      })
+    )
+    .optional(),
+
+  // Legacy quotation item support
   quotationItems: z
     .array(
       z.object({
@@ -242,6 +333,9 @@ export const inquirySubmissionSchema = z.object({
       })
     )
     .optional(),
+
+  // Package-specific fields
+  packageId: z.number().int().positive().optional().nullable(),
 });
 
 export type InquirySubmissionInput = z.infer<typeof inquirySubmissionSchema>;
